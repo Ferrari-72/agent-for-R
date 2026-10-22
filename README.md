@@ -39,4 +39,3 @@
 `experiment/.venv/` 和 `.uv-cache/` 是本机依赖目录，不属于提交材料。`experiment/results/` 保留了当前运行证据；分享实验结果时应单独打包需要的运行目录，并检查日志中是否含敏感信息。
 
 `openevolve/` 是上游源码目录，不随本项目提交。仓库保留 `experiment/patches/openevolve.patch`，首次运行脚本会自动下载对应上游提交并应用它。
-

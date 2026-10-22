@@ -1,0 +1,146 @@
+diff --git a/openevolve/config.py b/openevolve/config.py
+index 4fdab79..acb51d0 100644
+--- a/openevolve/config.py
++++ b/openevolve/config.py
+@@ -71,6 +71,7 @@ class LLMModelConfig:
+     temperature: float | None = None
+     top_p: float | None = None
+     max_tokens: int = None
++    extra_body: Optional[Dict[str, Any]] = None
+ 
+     # Request parameters
+     timeout: int = None
+@@ -192,6 +193,7 @@ class LLMConfig(LLMModelConfig):
+             "temperature": self.temperature,
+             "top_p": self.top_p,
+             "max_tokens": self.max_tokens,
++            "extra_body": self.extra_body,
+             "timeout": self.timeout,
+             "retries": self.retries,
+             "retry_delay": self.retry_delay,
+@@ -249,6 +251,7 @@ class LLMConfig(LLMModelConfig):
+             "temperature": self.temperature,
+             "top_p": self.top_p,
+             "max_tokens": self.max_tokens,
++            "extra_body": self.extra_body,
+             "timeout": self.timeout,
+             "retries": self.retries,
+             "retry_delay": self.retry_delay,
+@@ -465,6 +468,7 @@ class Config:
+ 
+     # Parallel controller settings
+     max_tasks_per_child: Optional[int] = None
++    stop_on_llm_error: bool = False
+ 
+     @classmethod
+     def from_yaml(cls, path: Union[str, Path]) -> "Config":
+diff --git a/openevolve/llm/openai.py b/openevolve/llm/openai.py
+index 6b8fe19..b6159d5 100644
+--- a/openevolve/llm/openai.py
++++ b/openevolve/llm/openai.py
+@@ -56,6 +56,7 @@ class OpenAILLM(LLMInterface):
+         self.temperature = model_cfg.temperature
+         self.top_p = model_cfg.top_p
+         self.max_tokens = model_cfg.max_tokens
++        self.extra_body = getattr(model_cfg, "extra_body", None)
+         self.timeout = model_cfg.timeout
+         self.retries = model_cfg.retries
+         self.retry_delay = model_cfg.retry_delay
+@@ -167,6 +168,11 @@ class OpenAILLM(LLMInterface):
+             if reasoning_effort is not None:
+                 params["reasoning_effort"] = reasoning_effort
+ 
++        # Forward provider-specific request fields when configured.
++        extra_body = kwargs.get("extra_body", self.extra_body)
++        if extra_body is not None:
++            params["extra_body"] = extra_body
++
+         # Add seed parameter for reproducibility if configured
+         # Skip seed parameter for Google AI Studio endpoint as it doesn't support it
+         # Seed only makes sense for actual API calls
+diff --git a/openevolve/process_parallel.py b/openevolve/process_parallel.py
+index 8c2b29a..9f7c4f5 100644
+--- a/openevolve/process_parallel.py
++++ b/openevolve/process_parallel.py
+@@ -3,6 +3,7 @@ Process-based parallel controller for true parallelism
+ """
+ 
+ import asyncio
++import json
+ import logging
+ import multiprocessing as mp
+ import pickle
+@@ -23,6 +24,41 @@ from openevolve.utils.metrics_utils import safe_numeric_average
+ logger = logging.getLogger(__name__)
+ 
+ 
++def _recent_failure_feedback(programs, artifacts, limit=2):
++    """Give the next generation concrete errors from recent invalid programs."""
++    failed = sorted(
++        (p for p in programs if p.metrics.get("failure_count", 0) > 0),
++        key=lambda p: p.iteration_found or 0,
++        reverse=True,
++    )
++    notes = []
++    for program in failed[:limit]:
++        payload = artifacts.get(program.id, {}).get("case_results.json")
++        if not payload:
++            continue
++        try:
++            records = json.loads(payload)
++        except (TypeError, ValueError):
++            continue
++        errors = []
++        for record in records:
++            message = record.get("error")
++            if message and record.get("detail"):
++                detail = record["detail"].splitlines()[-1][:240]
++                message = f"{message}: {detail}"
++            if message and message not in errors:
++                errors.append(message)
++        if errors:
++            notes.append(f"Iteration {program.iteration_found}: " + "; ".join(errors[:3]))
++    if not notes:
++        return ""
++    return (
++        "\n\n## Recent invalid candidate feedback\n"
++        "Fix these errors before seeking lower contraction cost. "
++        "A failed candidate is not an improvement.\n" + "\n".join(notes)
++    )
++
++
+ class _CandidateRejected(Exception):
+     """Stop processing an iteration after admission rejects its child."""
+ 
+@@ -203,6 +239,7 @@ def _run_iteration_worker(
+             current_changes_description=parent_changes_desc,
+             island_id=db_snapshot.get("sampling_island"),
+         )
++        prompt["user"] += _recent_failure_feedback(island_programs, db_snapshot["artifacts"])
+ 
+         iteration_start = time.time()
+ 
+@@ -662,7 +699,10 @@ class ProcessParallelController:
+         # Track pending futures by island to maintain distribution
+         pending_futures: Dict[int, Future] = {}
+         island_pending: Dict[int, List[int]] = {i: [] for i in range(self.num_islands)}
+-        batch_size = min(self.num_workers * 2, max_iterations)
++        # A queued speculative task uses a snapshot from before the preceding
++        # evaluation. Keep at most one task per worker so feedback can reach
++        # the next generation when running sequential experiments.
++        batch_size = min(self.num_workers, max_iterations)
+ 
+         # Submit initial batch - distribute across islands
+         batch_per_island = max(1, batch_size // self.num_islands) if batch_size > 0 else 0
+@@ -755,6 +795,11 @@ class ProcessParallelController:
+                     logger.warning(
+                         f"Iteration {completed_iteration} error: {result.error}{token_str}"
+                     )
++                    if self.config.stop_on_llm_error and result.error.startswith(
++                        "LLM generation failed:"
++                    ):
++                        logger.error("Stopping after model generation failed")
++                        self.shutdown_event.set()
+                 elif result.child_program_dict:
+                     # Reconstruct program from dict
+                     child_program = Program(**result.child_program_dict)

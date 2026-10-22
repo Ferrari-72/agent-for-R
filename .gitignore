@@ -1,0 +1,13 @@
+.uv-cache/
+openevolve/
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+experiment/results/
+张量网络/.obsidian/
+张量网络/欢迎.md
+张量网络/这是我们的最初目的.md
+张量网络/Pasted image*.png
+*.pyc
+.env
+.env.*

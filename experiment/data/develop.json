@@ -1,0 +1,319 @@
+[
+  {
+    "name": "lattice_2x2_s11",
+    "family": "lattice",
+    "inputs": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "c",
+        "b"
+      ],
+      [
+        "a",
+        "d"
+      ],
+      [
+        "c",
+        "d"
+      ]
+    ],
+    "output": [],
+    "sizes": {
+      "a": 2,
+      "b": 2,
+      "c": 2,
+      "d": 2
+    },
+    "source": {
+      "generator": "cotengra.utils.lattice_equation",
+      "rows": 2,
+      "cols": 2,
+      "seed": 11
+    }
+  },
+  {
+    "name": "lattice_2x3_s12",
+    "family": "lattice",
+    "inputs": [
+      [
+        "a",
+        "b"
+      ],
+      [
+        "c",
+        "b",
+        "d"
+      ],
+      [
+        "e",
+        "d"
+      ],
+      [
+        "a",
+        "f"
+      ],
+      [
+        "c",
+        "f",
+        "g"
+      ],
+      [
+        "e",
+        "g"
+      ]
+    ],
+    "output": [],
+    "sizes": {
+      "a": 2,
+      "b": 2,
+      "c": 2,
+      "d": 2,
+      "e": 2,
+      "f": 2,
+      "g": 2
+    },
+    "source": {
+      "generator": "cotengra.utils.lattice_equation",
+      "rows": 2,
+      "cols": 3,
+      "seed": 12
+    }
+  },
+  {
+    "name": "circuit_3q_d1_s13",
+    "family": "circuit",
+    "inputs": [
+      [
+        "a"
+      ],
+      [
+        "b"
+      ],
+      [
+        "c"
+      ],
+      [
+        "d",
+        "a"
+      ],
+      [
+        "e",
+        "b"
+      ],
+      [
+        "f",
+        "c"
+      ],
+      [
+        "g",
+        "d",
+        "h"
+      ],
+      [
+        "h",
+        "i",
+        "e"
+      ],
+      [
+        "j",
+        "g"
+      ],
+      [
+        "k",
+        "i"
+      ],
+      [
+        "l",
+        "k",
+        "m"
+      ],
+      [
+        "m",
+        "n",
+        "f"
+      ],
+      [
+        "o",
+        "l"
+      ],
+      [
+        "p",
+        "n"
+      ]
+    ],
+    "output": [
+      "j",
+      "o",
+      "p"
+    ],
+    "sizes": {
+      "a": 2,
+      "b": 2,
+      "c": 2,
+      "d": 2,
+      "e": 2,
+      "f": 2,
+      "g": 2,
+      "h": 2,
+      "i": 2,
+      "j": 2,
+      "k": 2,
+      "l": 2,
+      "m": 2,
+      "n": 2,
+      "o": 2,
+      "p": 2
+    },
+    "source": {
+      "generator": "quimb.tensor.circ_ansatz_1D_brickwork",
+      "qubits": 3,
+      "depth": 1,
+      "seed": 13,
+      "quantity": "full_state",
+      "gate_contract": "library_default"
+    }
+  },
+  {
+    "name": "circuit_3q_d2_s14",
+    "family": "circuit",
+    "inputs": [
+      [
+        "a"
+      ],
+      [
+        "b"
+      ],
+      [
+        "c"
+      ],
+      [
+        "d",
+        "a"
+      ],
+      [
+        "e",
+        "b"
+      ],
+      [
+        "f",
+        "c"
+      ],
+      [
+        "g",
+        "d",
+        "h"
+      ],
+      [
+        "h",
+        "i",
+        "e"
+      ],
+      [
+        "j",
+        "g"
+      ],
+      [
+        "k",
+        "i"
+      ],
+      [
+        "l",
+        "k",
+        "m"
+      ],
+      [
+        "m",
+        "n",
+        "f"
+      ],
+      [
+        "o",
+        "l"
+      ],
+      [
+        "p",
+        "n"
+      ],
+      [
+        "q",
+        "j",
+        "r"
+      ],
+      [
+        "r",
+        "s",
+        "o"
+      ],
+      [
+        "t",
+        "q"
+      ],
+      [
+        "u",
+        "s"
+      ],
+      [
+        "v",
+        "u",
+        "w"
+      ],
+      [
+        "w",
+        "x",
+        "p"
+      ],
+      [
+        "y",
+        "v"
+      ],
+      [
+        "z",
+        "x"
+      ]
+    ],
+    "output": [
+      "t",
+      "y",
+      "z"
+    ],
+    "sizes": {
+      "a": 2,
+      "b": 2,
+      "c": 2,
+      "d": 2,
+      "e": 2,
+      "f": 2,
+      "g": 2,
+      "h": 2,
+      "i": 2,
+      "j": 2,
+      "k": 2,
+      "l": 2,
+      "m": 2,
+      "n": 2,
+      "o": 2,
+      "p": 2,
+      "q": 2,
+      "r": 2,
+      "s": 2,
+      "t": 2,
+      "u": 2,
+      "v": 2,
+      "w": 2,
+      "x": 2,
+      "y": 2,
+      "z": 2
+    },
+    "source": {
+      "generator": "quimb.tensor.circ_ansatz_1D_brickwork",
+      "qubits": 3,
+      "depth": 2,
+      "seed": 14,
+      "quantity": "full_state",
+      "gate_contract": "library_default"
+    }
+  }
+]

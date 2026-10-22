@@ -1,0 +1,57 @@
+max_iterations: 3
+stop_on_llm_error: true
+checkpoint_interval: 1
+random_seed: 42
+log_level: INFO
+diff_based_evolution: true
+enforce_evolve_blocks: true
+max_code_length: 12000
+
+llm:
+  models:
+    - name: deepseek-ai/DeepSeek-V3.2
+      weight: 1.0
+  api_base: https://api.siliconflow.cn/v1
+  api_key: ${OPENAI_API_KEY}
+  temperature: 0.7
+  max_tokens: 1024
+  extra_body:
+    enable_thinking: false
+  timeout: 75
+  retries: 0
+
+prompt:
+  system_message: >-
+    Improve the contraction path search algorithm. Keep the find_path(inputs,
+    output, sizes, seed=0) signature. Return exactly len(inputs)-1 pairs of
+    integer positions in the current tensor list. After each pair, the two
+    tensors are removed and their result is appended. Always retain a valid
+    fallback path. Use only installed packages and real APIs. In opt_einsum
+    3.4.0, oe.paths.greedy(inputs, output, sizes) has NO seed parameter.
+    oe.RandomGreedy(max_repeats=32, parallel=False) is callable with inputs,
+    output, sizes. cotengra.ContractionTree.from_path(inputs, output, sizes,
+    path=path, check=True, autocomplete=False) can score a valid path with
+    contraction_cost(). A tree can be refined with simulated_anneal(seed=0,
+    tsteps=20, numiter=20, minimize="flops") and converted back with
+    get_path(). Never compare paths using their length; all valid paths have
+    the same number of steps. The evaluator checks legality and rewards lower
+    contraction cost. Candidate path search must finish within 10 seconds.
+
+database:
+  num_islands: 1
+  population_size: 10
+  archive_size: 5
+  log_prompts: true
+
+evaluator:
+  timeout: 90
+  max_retries: 0
+  cascade_evaluation: false
+  parallel_evaluations: 1
+  use_llm_feedback: false
+
+evolution_trace:
+  enabled: true
+  format: jsonl
+  include_code: true
+  include_prompts: true
