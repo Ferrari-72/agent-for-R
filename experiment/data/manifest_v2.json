@@ -1,0 +1,14 @@
+{
+  "develop_v2.json": {
+    "cases": 12,
+    "sha256": "b1c86094fbe931e9ee85537733df139d88babcac4d4f006b44cbade13eb005a0"
+  },
+  "final_v2.json": {
+    "cases": 8,
+    "sha256": "46cf041fc78bbcd7b93c2ff53ccf601ae262a0f82dbc87e82b0a6994f9742c5f"
+  },
+  "transfer_v2.json": {
+    "cases": 6,
+    "sha256": "b80946aa4ca8426024470c0202129911fa39f17f95cdd5797e91ecbc05f5ab14"
+  }
+}

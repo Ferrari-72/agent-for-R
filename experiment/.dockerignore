@@ -1,0 +1,9 @@
+**
+!Dockerfile.runner
+!requirements.lock
+!candidate_runner.py
+!candidate_worker.py
+!baseline_runner.py
+!baseline_worker.py
+!tnlab/
+!tnlab/*.py

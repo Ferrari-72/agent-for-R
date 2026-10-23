@@ -11,7 +11,7 @@ from uuid import uuid4
 from openevolve.api import run_evolution
 from openevolve.config import load_config
 
-from run_minimal import write_report
+from run_experiment import write_report
 
 ROOT = Path(__file__).resolve().parent
 DIFF = """<<<<<<< SEARCH
@@ -27,12 +27,28 @@ BAD_DIFF = """<<<<<<< SEARCH
 >>>>>>> REPLACE"""
 
 
+def patch(old, new):
+    return f"<<<<<<< SEARCH\n{old}\n=======\n{new}\n>>>>>>> REPLACE"
+
+
+FAILURES = {
+    "bad_api": (BAD_DIFF, "unexpected keyword argument"),
+    "patch_parse": ("This response has no patch blocks.", "No valid diffs"),
+    "patch_apply": (patch("no such parent text", "replacement"), "SEARCH block(s) matched"),
+    "syntax": (patch("    import opt_einsum as oe", "    import (") , "syntax"),
+    "import": (patch("    import opt_einsum as oe", "    import missing_candidate_package"),
+               "ModuleNotFoundError"),
+    "invalid_path": (patch("    import opt_einsum as oe", "    import opt_einsum as oe\n    return []"),
+                     "path must have exactly"),
+}
+
+
 class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         length = int(self.headers.get("Content-Length", "0"))
         request = json.loads(self.rfile.read(length))
         self.server.prompts.append(request)
-        response_text = (BAD_DIFF if self.server.feedback_test and
+        response_text = (FAILURES[self.server.failure][0] if self.server.feedback_test and
                          len(self.server.prompts) == 1 else DIFF)
         body = json.dumps({
             "id": "mock-1", "object": "chat.completion", "created": 0,
@@ -53,11 +69,18 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--feedback", action="store_true")
+    parser.add_argument("--budget-test", action="store_true")
+    parser.add_argument("--budget-first-invalid", action="store_true")
+    parser.add_argument("--failure", choices=tuple(FAILURES), default="bad_api")
     args = parser.parse_args()
+    if args.budget_first_invalid and not args.budget_test:
+        parser.error("--budget-first-invalid requires --budget-test")
     os.environ.setdefault("OPENAI_API_KEY", "local-smoke-test")
+    os.environ.setdefault("TN_EXECUTION_MODE", "local")
     config = load_config(ROOT / "config.yaml")
     server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
-    server.feedback_test = args.feedback
+    server.feedback_test = args.feedback or args.budget_first_invalid
+    server.failure = args.failure
     server.prompts = []
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()
@@ -65,19 +88,46 @@ def main():
         {"api_base": f"http://127.0.0.1:{server.server_port}/v1"}, overwrite=True
     )
     output = ROOT / "results" / f"mock_smoke_{uuid4().hex[:6]}"
+    os.environ["OPENEVOLVE_ITERATION_JOURNAL"] = str(output / "iteration_journal.jsonl")
+    if args.budget_test:
+        os.environ["OPENEVOLVE_REQUEST_BUDGET_DB"] = str(output / "budget.sqlite3")
+        os.environ["OPENEVOLVE_REQUEST_LIMIT"] = "1"
     try:
         result = run_evolution(ROOT / "initial_program.py",
                                ROOT / "openevolve_evaluator.py", config=config,
-                               iterations=2 if args.feedback else 1,
+                               iterations=2 if args.feedback or args.budget_test else 1,
                                output_dir=str(output), cleanup=False)
     finally:
         server.shutdown()
     write_report(result, output)
+    if args.budget_test:
+        rounds = [json.loads(line) for line in
+                  (output / "iteration_journal.jsonl").read_text(encoding="utf-8").splitlines()]
+        if len(server.prompts) != 1 or len(rounds) != 2:
+            raise RuntimeError("request budget did not stop the second model call")
+        if "budget exhausted" not in rounds[1]["error"]:
+            raise RuntimeError("budget exhaustion was not recorded")
+        if not (output / "checkpoints" / "checkpoint_2").is_dir():
+            raise RuntimeError("request budget stopped without a checkpoint")
+        report = json.loads((output / "development_report.json").read_text(encoding="utf-8"))
+        if report["search"]["http_requests"]["total"] != 1:
+            raise RuntimeError("report did not preserve the HTTP request count")
+        print("budget exhaustion recorded with checkpoint")
     if args.feedback:
+        journal = output / "iteration_journal.jsonl"
+        rounds = [json.loads(line) for line in journal.read_text(encoding="utf-8").splitlines()]
+        if len(rounds) != 2 or [item["status"] for item in rounds] != ["rejected", "admitted"]:
+            raise RuntimeError("the two-stage candidate history is incomplete")
+        for item in rounds:
+            for artifact in item["artifact_files"].values():
+                if not (output / artifact).is_file():
+                    raise RuntimeError(f"missing iteration artifact: {artifact}")
+        if rounds[0]["stages"][-1]["status"] not in ("failed", "rejected"):
+            raise RuntimeError("invalid candidate was not rejected")
         if len(server.prompts) != 2:
             raise RuntimeError("expected two model calls")
         second = json.dumps(server.prompts[1], ensure_ascii=False)
-        if "unexpected keyword argument" not in second or "seed" not in second:
+        if FAILURES[args.failure][1] not in second:
             raise RuntimeError("the second model prompt lacks the first candidate error")
         print("feedback reached the second model prompt")
     if not all(request.get("enable_thinking") is False for request in server.prompts):

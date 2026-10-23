@@ -1,5 +1,4 @@
 .uv-cache/
-openevolve/
 **/.venv/
 **/__pycache__/
 **/.pytest_cache/

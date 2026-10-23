@@ -1,0 +1,12 @@
+FROM python:3.13.2-slim@sha256:6b3223eb4d93718828223966ad316909c39813dee3ee9395204940500792b740
+COPY requirements.lock /requirements.lock
+RUN pip install --no-cache-dir -r /requirements.lock
+ARG SOURCE_HASH
+LABEL org.tnlab.source-sha256=$SOURCE_HASH
+COPY candidate_runner.py /runner.py
+COPY candidate_worker.py /candidate_worker.py
+COPY baseline_runner.py /baseline_runner.py
+COPY baseline_worker.py /baseline_worker.py
+COPY tnlab /tnlab
+USER 65534:65534
+WORKDIR /tmp

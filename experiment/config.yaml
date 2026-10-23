@@ -14,13 +14,15 @@ llm:
   api_base: https://api.siliconflow.cn/v1
   api_key: ${OPENAI_API_KEY}
   temperature: 0.7
-  max_tokens: 1024
+  max_tokens: 2048
   extra_body:
     enable_thinking: false
   timeout: 75
   retries: 0
 
 prompt:
+  template_dir: prompts
+  use_template_stochasticity: false
   system_message: >-
     Improve the contraction path search algorithm. Keep the find_path(inputs,
     output, sizes, seed=0) signature. Return exactly len(inputs)-1 pairs of
@@ -33,9 +35,21 @@ prompt:
     path=path, check=True, autocomplete=False) can score a valid path with
     contraction_cost(). A tree can be refined with simulated_anneal(seed=0,
     tsteps=20, numiter=20, minimize="flops") and converted back with
-    get_path(). Never compare paths using their length; all valid paths have
-    the same number of steps. The evaluator checks legality and rewards lower
+    get_path(), but any extracted path must be independently passed through
+    from_path(check=True, autocomplete=False) before it is returned. Never
+    trust tree.cost or path length as a legality check. Never use
+    oe.RandomGreedy or any other uncontrolled random source: the same inputs,
+    output, sizes, and seed must return the identical path on every call. All
+    randomness, if used, must be explicitly derived from seed. Always keep a
+    known-valid greedy fallback and return it whenever refinement, validation,
+    or cost comparison fails. The evaluator checks legality and rewards lower
     contraction cost. Candidate path search must finish within 10 seconds.
+    Your response must start immediately with the literal seven '<'
+    characters of a complete diff block: <<<<<<< SEARCH. Do not output a
+    standalone line containing SEARCH, REPLACE, or any explanation before the
+    first diff block. Output exactly one SEARCH/REPLACE block and end
+    immediately after >>>>>>> REPLACE. Use no Markdown code fences and do not
+    merely describe a solution.
 
 database:
   num_islands: 1

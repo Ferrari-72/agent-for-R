@@ -1,0 +1,35 @@
+# Tensor-network candidate evolution
+
+Current metrics:
+{metrics}
+
+Improvement areas:
+{improvement_areas}
+
+Previous evolution context:
+{evolution_history}
+
+Evaluation feedback and artifacts:
+{artifacts}
+
+Current program:
+```{language}
+{current_program}
+```
+
+Task: make one targeted improvement to `find_path` while preserving the required interface and deterministic behavior.
+
+Output protocol is strict:
+1. The first characters of your response must be exactly `<<<<<<< SEARCH`.
+2. Output exactly one complete SEARCH/REPLACE block.
+3. The SEARCH text must match the current program exactly.
+4. The response must end immediately after `>>>>>>> REPLACE`; do not output reasoning, Markdown fences, a standalone SEARCH/REPLACE line, or a second diff block.
+
+Use this exact structure:
+<<<<<<< SEARCH
+exact current code to replace
+=======
+replacement code
+>>>>>>> REPLACE
+
+Do not rewrite code outside the EVOLVE block. Return a valid, deterministic candidate with a verified fallback path.
