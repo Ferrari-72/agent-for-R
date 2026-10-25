@@ -3,11 +3,14 @@
 **/__pycache__/
 **/.pytest_cache/
 experiment/results/
+experiment/tmp*/
 张量网络/.obsidian/
 张量网络/欢迎.md
 张量网络/这是我们的最初目的.md
 张量网络/Pasted image*.png
 *.pyc
+**/*.egg-info/
+/audit_outputs/
 .env
 .env.*
 张量网络/单元测试为何可信.md

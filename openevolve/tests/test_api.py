@@ -228,7 +228,7 @@ def test():
 
         # Run in a subprocess to verify it works across process boundaries
         test_script = os.path.join(self.temp_dir, "run_eval.py")
-        with open(test_script, 'w') as f:
+        with open(test_script, 'w', encoding='utf-8') as f:
             f.write(f"""
 import importlib.util
 spec = importlib.util.spec_from_file_location("evaluator", {eval_file!r})

@@ -10,6 +10,7 @@ See: https://github.com/algorithmicsuperintelligence/openevolve/pull/462
 """
 
 import asyncio
+import logging
 import os
 import tempfile
 import unittest
@@ -95,6 +96,161 @@ class TestInitialProgramArtifacts(unittest.TestCase):
         self.assertIsNotNone(artifacts, "Initial program artifacts must be stored, not dropped")
         self.assertEqual(artifacts.get("stderr"), "initial-program-warning")
         self.assertEqual(artifacts.get("note"), "hello")
+
+    def test_constructor_failure_closes_run_logging(self):
+        before = list(logging.getLogger().handlers)
+        with patch.object(OpenEvolve, "_setup_manual_mode_queue", side_effect=RuntimeError("queue failed")):
+            with self.assertRaisesRegex(RuntimeError, "queue failed"):
+                OpenEvolve(
+                    initial_program_path=self.program_file,
+                    evaluation_file=self.eval_file,
+                    config=self._make_config(),
+                    output_dir=os.path.join(self.test_dir, "constructor-failure-out"),
+                )
+        self.assertEqual(logging.getLogger().handlers, before)
+
+    def test_constructor_language_failure_closes_run_logging(self):
+        before = list(logging.getLogger().handlers)
+        with patch(
+            "openevolve.controller.extract_code_language",
+            side_effect=RuntimeError("language detection failed"),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "language detection failed"):
+                OpenEvolve(
+                    initial_program_path=self.program_file,
+                    evaluation_file=self.eval_file,
+                    config=self._make_config(),
+                    output_dir=os.path.join(self.test_dir, "language-failure-out"),
+                )
+        self.assertEqual(logging.getLogger().handlers, before)
+
+    def test_initial_evaluation_failure_closes_run_logging(self):
+        controller = OpenEvolve(
+            initial_program_path=self.program_file,
+            evaluation_file=self.eval_file,
+            config=self._make_config(),
+            output_dir=os.path.join(self.test_dir, "failure-out"),
+        )
+        handlers = list(controller._run_logging_handlers)
+        controller.evaluator.evaluate_program = AsyncMock(side_effect=RuntimeError("evaluation failed"))
+
+        with self.assertRaisesRegex(RuntimeError, "evaluation failed"):
+            asyncio.run(controller.run(iterations=1))
+
+        self.assertFalse(set(handlers).intersection(logging.getLogger().handlers))
+        file_handlers = [handler for handler in handlers if isinstance(handler, logging.FileHandler)]
+        self.assertTrue(file_handlers)
+        self.assertTrue(all(handler.stream is None for handler in file_handlers))
+        self.assertIsNone(controller.parallel_controller)
+
+    def test_primary_run_failure_is_not_masked_by_cleanup_failure(self):
+        controller = OpenEvolve(
+            initial_program_path=self.program_file,
+            evaluation_file=self.eval_file,
+            config=self._make_config(),
+            output_dir=os.path.join(self.test_dir, "primary-failure-out"),
+        )
+        controller.evolution_tracer = unittest.mock.Mock()
+        controller.evolution_tracer.close.side_effect = RuntimeError("tracer cleanup failed")
+
+        with (
+            patch.object(
+                controller,
+                "_run_evolution_with_checkpoints",
+                new=AsyncMock(side_effect=RuntimeError("primary failure")),
+            ),
+            patch("openevolve.controller.ProcessParallelController") as mock_ppc,
+        ):
+            mock_ppc.return_value.start.return_value = None
+            mock_ppc.return_value.stop.side_effect = RuntimeError("stop cleanup failed")
+            with self.assertRaisesRegex(RuntimeError, "primary failure"):
+                asyncio.run(controller.run(iterations=1))
+
+        self.assertIsNone(controller.parallel_controller)
+        self.assertEqual(controller._run_logging_handlers, [])
+
+    def test_parallel_stop_failure_still_closes_tracer_and_logging(self):
+        controller = OpenEvolve(
+            initial_program_path=self.program_file,
+            evaluation_file=self.eval_file,
+            config=self._make_config(),
+            output_dir=os.path.join(self.test_dir, "stop-failure-out"),
+        )
+        handlers = list(controller._run_logging_handlers)
+        tracer = unittest.mock.Mock()
+        controller.evolution_tracer = tracer
+
+        with (
+            patch.object(
+                controller, "_run_evolution_with_checkpoints", new=AsyncMock(return_value=None)
+            ),
+            patch("openevolve.controller.ProcessParallelController") as mock_ppc,
+        ):
+            mock_ppc.return_value.start.return_value = None
+            mock_ppc.return_value.stop.side_effect = RuntimeError("stop failed")
+            with self.assertRaisesRegex(RuntimeError, "stop failed"):
+                asyncio.run(controller.run(iterations=1))
+
+        tracer.close.assert_called_once()
+        file_handlers = [handler for handler in handlers if isinstance(handler, logging.FileHandler)]
+        self.assertTrue(file_handlers)
+        self.assertTrue(all(handler.stream is None for handler in file_handlers))
+
+    def test_successful_run_reopens_resources_for_retry(self):
+        config = self._make_config()
+        config.evolution_trace.enabled = True
+        config.evolution_trace.output_path = os.path.join(self.test_dir, "trace.jsonl")
+        controller = OpenEvolve(
+            initial_program_path=self.program_file,
+            evaluation_file=self.eval_file,
+            config=config,
+            output_dir=os.path.join(self.test_dir, "retry-out"),
+        )
+
+        with (
+            patch.object(controller, "_setup_logging", wraps=controller._setup_logging) as setup_logging,
+            patch.object(
+                controller, "_create_evolution_tracer", wraps=controller._create_evolution_tracer
+            ) as create_tracer,
+            patch("openevolve.controller.ProcessParallelController") as mock_ppc,
+        ):
+            mock_ppc.return_value.start.return_value = None
+            mock_ppc.return_value.stop.return_value = None
+            mock_ppc.return_value.run_evolution = AsyncMock(return_value=None)
+            asyncio.run(controller.run(iterations=0))
+            asyncio.run(controller.run(iterations=0))
+
+        self.assertEqual(setup_logging.call_count, 1)
+        create_tracer.assert_called_once()
+        self.assertIsNone(controller.evolution_tracer)
+
+    def test_successful_run_logs_completion_before_closing_handlers(self):
+        controller = OpenEvolve(
+            initial_program_path=self.program_file,
+            evaluation_file=self.eval_file,
+            config=self._make_config(),
+            output_dir=os.path.join(self.test_dir, "success-out"),
+        )
+        handlers = list(controller._run_logging_handlers)
+
+        with (
+            patch.object(
+                controller, "_run_evolution_with_checkpoints", new=AsyncMock(return_value=None)
+            ),
+            patch("openevolve.controller.ProcessParallelController") as mock_ppc,
+        ):
+            mock_ppc.return_value.start.return_value = None
+            mock_ppc.return_value.stop.return_value = None
+            asyncio.run(controller.run(iterations=1))
+
+        log_path = os.path.join(self.test_dir, "success-out", "logs")
+        log_files = [name for name in os.listdir(log_path) if name.endswith(".log")]
+        self.assertEqual(len(log_files), 1)
+        with open(os.path.join(log_path, log_files[0]), encoding="utf-8") as stream:
+            self.assertIn("Evolution complete", stream.read())
+        file_handlers = [handler for handler in handlers if isinstance(handler, logging.FileHandler)]
+        self.assertTrue(file_handlers)
+        self.assertTrue(all(handler.stream is None for handler in file_handlers))
 
     def test_no_artifacts_when_evaluator_returns_none(self):
         """When the evaluator returns no artifacts, nothing is stored (and no crash)."""

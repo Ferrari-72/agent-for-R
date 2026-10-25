@@ -68,11 +68,9 @@ def test_endpoint_detection():
     
     if failed == 0:
         print("🎉 All tests PASSED! The fix is working correctly.")
-        return True
     else:
-        print("⚠️ Some tests FAILED! Please review the logic.")
-        return False
+        assert False, f"{failed} of {len(test_cases)} endpoint checks failed"
+
 
 if __name__ == "__main__":
-    success = test_endpoint_detection()
-    exit(0 if success else 1)
+    test_endpoint_detection()

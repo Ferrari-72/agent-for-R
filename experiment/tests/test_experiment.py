@@ -159,6 +159,36 @@ class CandidateTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "cost or peak differs"):
                 verify(run)
 
+    def test_saved_report_recheck_accepts_v3_manifest(self):
+        from verify_saved_report import verify
+        from hashlib import sha256
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            run = Path(directory)
+            (run / "best_recheck.py").write_text("def find_path(*args): pass\n", encoding="utf-8")
+            code_hash = sha256((run / "best_recheck.py").read_bytes()).hexdigest()
+            (run / "development_report.json").write_text(json.dumps(
+                {"environment": {"best_code_sha256": code_hash}}), encoding="utf-8")
+            data = run / "frozen_data"
+            data.mkdir()
+            (data / "synthetic.json").write_text(json.dumps([CHAIN]), encoding="utf-8")
+            manifest = {"synthetic.json": {"sha256": sha256(
+                (data / "synthetic.json").read_bytes()).hexdigest()}}
+            (data / "manifest_v3.json").write_text(json.dumps(manifest), encoding="utf-8")
+            path = [(0, 1), (0, 1)]
+            score = score_path(CHAIN, path)
+            item = {"path": path, "cost": score.cost,
+                    "peak_elements": score.peak_elements, "search_seconds": 0.1}
+            group = {"cases": [{"case": CHAIN["name"], "baselines": {"greedy": item},
+                                "best_baseline_cost": score.cost,
+                                "candidate": {"0": {**item, "ratio_to_best_baseline": 1.0,
+                                                    "ratio_to_greedy": 1.0}}}],
+                     "summary": {"trials": 1, "valid_trials": 1, "failure_rate": 0.0,
+                                 "geometric_ratio_to_best_baseline": 1.0}}
+            (run / "final_report.json").write_text(json.dumps(
+                {"program_sha256": code_hash, "benchmark_manifest": manifest,
+                 "results": {"synthetic.json": group}}), encoding="utf-8")
+            self.assertEqual(verify(run)["verified_paths"], 2)
+
     def test_frozen_benchmark_snapshot_includes_development_and_heldout_sets(self):
         from tnlab.freeze import snapshot_frozen_data
         with tempfile.TemporaryDirectory(dir=ROOT) as directory:

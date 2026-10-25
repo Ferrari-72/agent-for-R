@@ -15,6 +15,8 @@ import importlib.util
 import os
 import unittest
 
+import numpy as np
+
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 EVALUATOR_PATH = os.path.join(REPO_ROOT, "examples", "circle_packing", "evaluator.py")
 BEST_PROGRAM_PATH = os.path.join(REPO_ROOT, "examples", "circle_packing", "best_program.py")
@@ -54,6 +56,17 @@ class TestCirclePackingBestProgram(unittest.TestCase):
         self.assertEqual(metrics["validity"], 1.0)
         self.assertGreaterEqual(metrics["sum_radii"], EXPECTED_SUM_RADII)
         self.assertAlmostEqual(metrics["combined_score"], metrics["target_ratio"])
+
+    def test_infeasible_high_sum_is_not_valid(self):
+        """The optimizer guard must reject overlapping high-scoring candidates."""
+        centers = np.zeros((26, 2))
+        radii = np.full(26, 0.03)
+        self.assertFalse(self.evaluator.validate_packing(centers, radii))
+
+        program = importlib.util.spec_from_file_location("circle_packing_best", BEST_PROGRAM_PATH)
+        module = importlib.util.module_from_spec(program)
+        program.loader.exec_module(module)
+        self.assertFalse(module._is_valid_packing(centers, radii))
 
     def test_best_program_solution_shapes_and_validity(self):
         """The solution must contain 26 circles, all valid inside the unit square"""

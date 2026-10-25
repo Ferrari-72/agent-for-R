@@ -195,16 +195,16 @@ llm:
     weight: 1.0
 """
         
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as f:
             f.write(yaml_content)
-            f.flush()
-            
-            try:
-                config = Config.from_yaml(f.name)
-                self.assertEqual(config.llm.reasoning_effort, "high")
-                self.assertEqual(config.llm.models[0].reasoning_effort, "high")
-            finally:
-                os.unlink(f.name)
+            path = f.name
+
+        try:
+            config = Config.from_yaml(path)
+            self.assertEqual(config.llm.reasoning_effort, "high")
+            self.assertEqual(config.llm.models[0].reasoning_effort, "high")
+        finally:
+            os.unlink(path)
 
 
 if __name__ == "__main__":

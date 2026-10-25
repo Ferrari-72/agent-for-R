@@ -5,6 +5,7 @@ import importlib.util
 import io
 import json
 import os
+import socket
 import subprocess
 import sys
 import tempfile
@@ -32,6 +33,17 @@ class OfflineModel:
 
 def offline_model(config):
     return OfflineModel(config)
+
+
+_REAL_SOCKET_CONNECT = socket.socket.connect
+
+
+def reject_external_connect(sock, address):
+    """Block external connections without breaking Windows asyncio self-pipes."""
+    host = address[0] if isinstance(address, tuple) else address
+    if host in {"127.0.0.1", "::1", "localhost"}:
+        return _REAL_SOCKET_CONNECT(sock, address)
+    raise AssertionError("network")
 
 
 class TestAlphaEvolveRunner(unittest.TestCase):
@@ -115,7 +127,7 @@ class TestAlphaEvolveRunner(unittest.TestCase):
                 patch(
                     "openevolve.llm.openai.openai.AsyncOpenAI", side_effect=AssertionError("client")
                 ),
-                patch("socket.socket.connect", side_effect=AssertionError("network")),
+                patch("socket.socket.connect", new=reject_external_connect),
             ):
                 self.assertEqual(self.invoke(args)["metrics"]["sum_of_radii"], 1)
                 evolve.assert_not_called()
@@ -250,7 +262,7 @@ class TestAlphaEvolveRunner(unittest.TestCase):
                 "openevolve.compat.alphaevolve_env.config_from_alphaevolve_env",
                 side_effect=offline_config,
             ),
-            patch("socket.socket.connect", side_effect=AssertionError("network")),
+            patch("socket.socket.connect", new=reject_external_connect),
         ):
             result = self.invoke(
                 [*self.env_args, "--evolve", "--output-dir", str(self.root / "output")]

@@ -47,10 +47,17 @@ def verify(run_dir):
     if _sha(code) != expected_code or final["program_sha256"] != expected_code:
         raise ValueError("candidate code hash differs between saved artifacts")
     data_dir = run_dir / "frozen_data"
-    if not (data_dir / "manifest_v2.json").exists():
-        data_dir = ROOT / "data"
-    manifest = json.loads((data_dir / "manifest_v2.json").read_text(encoding="utf-8"))
-    if manifest != final["benchmark_manifest"]:
+    if not data_dir.is_dir():
+        raise ValueError("saved run is missing frozen benchmark data")
+    manifest = None
+    for name in ("manifest_v2.json", "manifest_v3.json"):
+        candidate = data_dir / name
+        if candidate.is_file():
+            loaded = json.loads(candidate.read_text(encoding="utf-8"))
+            if loaded == final["benchmark_manifest"]:
+                manifest = loaded
+                break
+    if manifest is None:
         raise ValueError("saved benchmark manifest differs from final report")
     checked = 0
     for set_name, group in final["results"].items():
