@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import shutil
 from unittest.mock import MagicMock, patch
 from contextlib import redirect_stdout, redirect_stderr
 from math import prod
@@ -109,6 +110,18 @@ class ScoringTests(unittest.TestCase):
             self.assertEqual(first, second)
             self.assertGreater(score_path(case, first).cost, 0)
 
+    def test_local_baseline_ignores_parent_hash_seed(self):
+        from tnlab.execution import run_baseline as isolated_baseline
+
+        case = next(case for case in load_cases("develop_v2.json")
+                    if case["name"] == "circuit_5q_d3_s31")
+        with patch.dict(os.environ, {"TN_EXECUTION_MODE": "local", "PYTHONHASHSEED": "1"}):
+            first, _ = isolated_baseline(case, "random-greedy")
+        with patch.dict(os.environ, {"TN_EXECUTION_MODE": "local", "PYTHONHASHSEED": "2"}):
+            second, _ = isolated_baseline(case, "random-greedy")
+        self.assertEqual(first["path"], second["path"])
+        self.assertEqual(score_path(case, first["path"]).cost, 1708)
+
 
 class CandidateTests(unittest.TestCase):
     def test_saved_report_recheck_detects_cost_tampering(self):
@@ -146,6 +159,17 @@ class CandidateTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "cost or peak differs"):
                 verify(run)
 
+    def test_frozen_benchmark_snapshot_includes_development_and_heldout_sets(self):
+        from tnlab.freeze import snapshot_frozen_data
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            names = snapshot_frozen_data(directory)
+            self.assertEqual(names, ("manifest_v2.json", "develop_v2.json",
+                                     "manifest_v3.json", "final_v3.json", "transfer_v3.json"))
+            for name in names:
+                self.assertEqual(
+                    (Path(directory) / "frozen_data" / name).read_bytes(),
+                    (ROOT / "data" / name).read_bytes())
+
     def test_frozen_source_snapshot_has_verifiable_copies(self):
         from tnlab.freeze import snapshot_frozen_sources
         from hashlib import sha256
@@ -171,7 +195,7 @@ class CandidateTests(unittest.TestCase):
                                              "geometric_ratio_to_best_baseline": 1.0}},
             "transfer_v2.json": {"summary": {"valid_trials": 0, "trials": 0,
                                                 "failure_rate": 0.0}},
-        }})
+        }}, final_name="final_v2.json", transfer_name="transfer_v2.json")
         self.assertIn("本次新增 4 次", summary)
         self.assertIn("预算库累计 45 次", summary)
         self.assertIn("本次运行上限 30", summary)
@@ -185,7 +209,7 @@ class CandidateTests(unittest.TestCase):
                                             "geometric_ratio_to_best_baseline": 1.0}},
             "transfer_v2.json": {"summary": {"valid_trials": 0, "trials": 0,
                                                "failure_rate": 0.0}},
-        }})
+        }}, final_name="final_v2.json", transfer_name="transfer_v2.json")
         self.assertIn("本次新增 未知 次", legacy_summary)
         self.assertIn("预算库累计 26 次", legacy_summary)
         self.assertIn("不能从累计值反推本次新增请求", legacy_summary)
@@ -206,7 +230,7 @@ class CandidateTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "missing or has changed"):
                 verify_runner_image_archive(output, "sha256:image", "source-hash")
 
-        from final_evaluation import evaluate_frozen_sets
+        from final_evaluation import evaluate_frozen_sets, _evidence_sha256, _rules_sha256
         cases = [{"name": "first"}, {"name": "second"}]
         with tempfile.TemporaryDirectory(dir=ROOT) as directory:
             output = Path(directory)
@@ -214,12 +238,23 @@ class CandidateTests(unittest.TestCase):
                 json.dumps({"set": "synthetic.json", "result": {"case": "first"}}) + "\n",
                 encoding="utf-8")
             with patch("final_evaluation.load_cases", return_value=cases), \
-                 patch("final_evaluation.compare_case",
-                       return_value={"case": "second"}) as compare, \
+                 patch("final_evaluation.compare_case") as compare:
+                with self.assertRaisesRegex(RuntimeError, "progress evidence is invalid"):
+                    evaluate_frozen_sets(output, Path("candidate.py"), ("synthetic.json",),
+                                         "candidate-hash", "rules-hash")
+                compare.assert_not_called()
+
+            (output / "final_progress.jsonl").unlink()
+            first = {"case": "first", "value": 1, "wall_seconds": 0.1}
+            second = {"case": "second", "value": 2, "wall_seconds": 0.1}
+            with patch("final_evaluation.load_cases", return_value=cases), \
+                 patch("final_evaluation.compare_case", side_effect=[first, second, first, second]) as compare, \
                  patch("final_evaluation.summarize", return_value={"trials": 2}):
-                report = evaluate_frozen_sets(output, Path("candidate.py"),
-                                              ("synthetic.json",))
-            compare.assert_called_once_with(Path("candidate.py"), cases[1])
+                evaluate_frozen_sets(output, Path("candidate.py"), ("synthetic.json",),
+                                     "candidate-hash", "rules-hash")
+                report = evaluate_frozen_sets(output, Path("candidate.py"), ("synthetic.json",),
+                                              "candidate-hash", "rules-hash")
+            self.assertEqual(compare.call_count, 4)
             self.assertEqual([item["case"] for item in report["synthetic.json"]["cases"]],
                              ["first", "second"])
 
@@ -247,7 +282,10 @@ class CandidateTests(unittest.TestCase):
 
         from openevolve.utils.request_budget import reserve_request, request_last_id, request_usage
         with tempfile.TemporaryDirectory(dir=ROOT) as directory:
-            environment = {"OPENEVOLVE_REQUEST_BUDGET_DB": str(Path(directory) / "budget.db"),
+            database_path = Path(directory) / "budget.db"
+            from openevolve.utils.request_budget import initialize_request_budget
+            initialize_request_budget(database_path, "budget-test", 2)
+            environment = {"OPENEVOLVE_REQUEST_BUDGET_DB": str(database_path),
                            "OPENEVOLVE_REQUEST_LIMIT": "2"}
             with patch.dict(os.environ, environment):
                 reserve_request("model_list")
@@ -269,7 +307,12 @@ class CandidateTests(unittest.TestCase):
                 database.execute("CREATE TABLE requests (id INTEGER PRIMARY KEY, "
                                  "kind TEXT NOT NULL, created_at TEXT DEFAULT CURRENT_TIMESTAMP)")
                 database.execute("INSERT INTO requests (kind) VALUES ('legacy')")
+                database.execute("CREATE TABLE budget_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+                database.executemany("INSERT INTO budget_meta (key, value) VALUES (?, ?)", [
+                    ("research_id", "study-test"), ("limit", "10")])
                 database.commit()
+            from openevolve.utils.request_budget import initialize_request_budget
+            initialize_request_budget(database_path, "study-test", 10)
             environment = {"OPENEVOLVE_REQUEST_BUDGET_DB": str(database_path),
                            "OPENEVOLVE_REQUEST_LIMIT": "10", "TN_EXECUTION_MODE": "container"}
             with patch.dict(os.environ, environment):
@@ -451,8 +494,10 @@ class CandidateTests(unittest.TestCase):
         with patch("openevolve_evaluator.run_candidate",
                    side_effect=[(first, 0.2), (changed, 0.2)]):
             record = evaluate_case(ROOT / "initial_program.py", CHAIN)
-        self.assertEqual(record["error_code"], "invalid_path")
-        self.assertIn("nondeterministic", record["error"])
+        self.assertEqual(record["error_code"], "nondeterministic")
+        self.assertEqual(record["failure_class"], "nondeterminism")
+        self.assertEqual(record["reproducibility_repeat"], 2)
+        self.assertIn("different path", record["error"])
 
     def test_candidate_exception_and_invalid_path(self):
         from openevolve_evaluator import evaluate_case
@@ -485,13 +530,62 @@ class CandidateTests(unittest.TestCase):
         answer = json.loads(process.stdout)
         self.assertIn(score_path(case, answer["path"]).cost, (64, 90))
 
+    def test_request_budget_rejects_environment_limit_mismatch(self):
+        from openevolve.utils.request_budget import initialize_request_budget, reserve_request
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            ledger = Path(directory) / "budget.sqlite3"
+            initialize_request_budget(ledger, "study-test", 100)
+            with patch.dict(os.environ, {
+                    "OPENEVOLVE_REQUEST_BUDGET_DB": str(ledger),
+                    "OPENEVOLVE_REQUEST_LIMIT": "101"}):
+                with self.assertRaisesRegex(RuntimeError, "differs from ledger limit"):
+                    reserve_request("chat_completion")
+            with patch.dict(os.environ, {
+                    "OPENEVOLVE_REQUEST_BUDGET_DB": str(ledger),
+                    "OPENEVOLVE_REQUEST_LIMIT": "1"}):
+                with self.assertRaisesRegex(RuntimeError, "differs from ledger limit"):
+                    reserve_request("chat_completion")
+            with patch.dict(os.environ, {
+                    "OPENEVOLVE_REQUEST_BUDGET_DB": str(ledger)}, clear=True):
+                reserve_request("chat_completion")
+
+    def test_reproducibility_repeat_failures_keep_class_and_index(self):
+        from openevolve_evaluator import evaluate_case
+        from tnlab.execution import ResourceLimitError
+        first = ({"path": [(0, 1), (0, 1)], "search_seconds": 0.1}, 0.2)
+        failures = (
+            (TimeoutError("timeout repeat"), "timeout", "resource"),
+            (MemoryError("memory limit exceeded"), "resource_limit", "resource"),
+            (RuntimeError("runner import failed"), "execution_error", "unknown"),
+        )
+        for failure, error_code, failure_class in failures:
+            with self.subTest(error_code=error_code), patch(
+                    "openevolve_evaluator._run_checked", side_effect=[first, failure]):
+                record = evaluate_case(ROOT / "initial_program.py", CHAIN)
+                self.assertEqual(record["error_code"], error_code)
+                self.assertEqual(record["failure_class"], failure_class)
+                self.assertEqual(record["reproducibility_repeat"], 2)
+
+    def test_repeat_resource_limit_exception_is_classified(self):
+        from openevolve_evaluator import evaluate_case
+        from tnlab.execution import ResourceLimitError
+        first = ({"path": [(0, 1), (0, 1)], "search_seconds": 0.1}, 0.2)
+        with patch("openevolve_evaluator._run_checked",
+                   side_effect=[first, MemoryError("memory limit exceeded")]):
+            record = evaluate_case(ROOT / "initial_program.py", CHAIN)
+        self.assertEqual(record["error_code"], "resource_limit")
+        self.assertEqual(record["reproducibility_repeat"], 2)
+
     def test_candidate_timeout(self):
         from openevolve_evaluator import evaluate_case
         with tempfile.TemporaryDirectory(dir=ROOT) as directory:
             file = Path(directory) / "slow.py"
             file.write_text("import time\ndef find_path(*args, **kwargs):\n    time.sleep(2)\n    return []\n")
             with patch("openevolve_evaluator.CASE_TIMEOUT_SECONDS", 0.2):
-                self.assertEqual(evaluate_case(file, CHAIN)["error"], "timeout")
+                record = evaluate_case(file, CHAIN)
+            self.assertEqual(record["error_code"], "timeout")
+            self.assertEqual(record["failure_class"], "resource")
+            self.assertEqual(record["reproducibility_repeat"], 1)
 
     def test_trusted_search_timer_includes_candidate_import(self):
         from openevolve_evaluator import evaluate_case
@@ -510,14 +604,14 @@ class CandidateTests(unittest.TestCase):
     def test_api_probe_selects_fast_listed_model(self):
         import probe_api
         fake = MagicMock()
-        fake.models.list.return_value.data = [MagicMock(id="Qwen/Qwen3.6-27B")]
+        fake.models.list.return_value.data = [MagicMock(id="deepseek-ai/DeepSeek-V3.2")]
         fake.chat.completions.create.return_value.choices = [MagicMock()]
         output = io.StringIO()
         with patch.dict(os.environ, {"OPENAI_API_KEY": "local-test"}), \
              patch.object(probe_api, "OpenAI", return_value=fake), \
              redirect_stdout(output), redirect_stderr(io.StringIO()):
             probe_api.main()
-        self.assertEqual(output.getvalue().strip(), "Qwen/Qwen3.6-27B")
+        self.assertEqual(output.getvalue().strip(), "deepseek-ai/DeepSeek-V3.2")
         self.assertEqual(fake.chat.completions.create.call_args.kwargs["extra_body"],
                          {"enable_thinking": False})
 
@@ -539,10 +633,54 @@ class CandidateTests(unittest.TestCase):
                                         "cost": 1, "peak_elements": 1,
                                         "search_seconds": 0}):
             with patch.object(run_baselines, "load_cases", return_value=[]):
-                with patch("sys.argv", ["run_baselines.py", "--set", "final_v2.json"]):
-                    run_baselines.main()
+                for dataset in ("final_v2.json", "final_v3.json", "transfer_v3.json"):
+                    with patch("sys.argv", ["run_baselines.py", "--set", dataset]):
+                        run_baselines.main()
 
-    def test_no_admitted_candidate_still_writes_report(self):
+    def test_iteration_statistics_separate_requests_generation_evaluation_and_admission(self):
+        from run_experiment import derive_iteration_statistics
+        rounds = [
+            {"iteration": 1, "status": "rejected",
+             "stages": [{"stage": "model_request", "status": "passed"},
+                        {"stage": "evaluation_total", "status": "failed"}],
+             "metrics": {"failure_count": 1}},
+            {"iteration": 2, "status": "rejected",
+             "stages": [{"stage": "model_request", "status": "passed"},
+                        {"stage": "evaluation_total", "status": "passed"}],
+             "metrics": {"failure_count": 0}},
+            {"iteration": 3, "status": "admitted",
+             "stages": [{"stage": "model_request", "status": "passed"},
+                        {"stage": "evaluation_total", "status": "passed"}],
+             "metrics": {"failure_count": 0}},
+            {"iteration": 4, "status": "rejected",
+             "stages": [{"stage": "model_request", "status": "failed"}]},
+        ]
+        stats = derive_iteration_statistics(rounds, {"total": 5, "by_kind": {"chat_completion": 5}})
+        self.assertEqual(stats["journal_iterations"], 4)
+        self.assertEqual(stats["generation_attempts"], 4)
+        self.assertEqual(stats["completed_evaluations"], 3)
+        self.assertEqual(stats["failed_evaluations"], 1)
+        self.assertEqual(stats["valid_candidates"], 2)
+        self.assertEqual(stats["admitted_candidates"], 1)
+        self.assertEqual(stats["model_requests"]["total"], 5)
+        self.assertFalse(stats["invariants"]["journal_iterations_equal_registered_limit"])
+
+    def test_prompt_policy_manifest_is_canonical_and_verifiable(self):
+        from run_experiment import _verify_prompt_policy_manifest, _write_prompt_policy_manifest
+        from tempfile import TemporaryDirectory
+        with TemporaryDirectory(dir=ROOT) as directory:
+            output = Path(directory)
+            saved = _write_prompt_policy_manifest(output)
+            self.assertEqual(saved["manifest"]["failure_feedback_policy"]["id"],
+                             "openevolve_recent_v1")
+            self.assertFalse(saved["manifest"]["experience_policy"]["prompt_injection"])
+            self.assertEqual(_verify_prompt_policy_manifest(output), saved)
+            saved["manifest"]["history_policy"]["num_top_programs"] = 99
+            (output / "prompt_policy_manifest.json").write_text(
+                json.dumps(saved), encoding="utf-8")
+            with self.assertRaisesRegex(RuntimeError, "prompt policy"):
+                _verify_prompt_policy_manifest(output)
+
         from run_experiment import write_report
         from types import SimpleNamespace
         from tempfile import TemporaryDirectory
@@ -559,6 +697,398 @@ class CandidateTests(unittest.TestCase):
             self.assertEqual(report["search"]["termination_reason"],
                              "no valid candidate was admitted")
             self.assertTrue((output / "development_report.json").is_file())
+
+    def test_calibration_main_uses_mock_response_and_writes_machine_result(self):
+        import calibrate_api
+        from tempfile import TemporaryDirectory
+        initial_code = (ROOT / "initial_program.py").read_text(encoding="utf-8")
+        changed_code = initial_code.replace(
+            '"""Return exactly len(inputs) - 1 pairs of current tensor positions."""',
+            '"""Return exactly len(inputs) - 1 deterministic position pairs."""')
+        response_text = (
+            "<<<<<<< SEARCH\n"
+            '    """Return exactly len(inputs) - 1 pairs of current tensor positions."""\n'
+            "=======\n"
+            '    """Return exactly len(inputs) - 1 deterministic position pairs."""\n'
+            ">>>>>>> REPLACE\n")
+        fake_client = MagicMock()
+        fake_client.chat.completions.create.return_value.choices = [SimpleNamespace(
+            message=SimpleNamespace(content=response_text))]
+        with TemporaryDirectory(dir=ROOT) as directory:
+            output = Path(directory) / "calibration"
+            with patch.object(calibrate_api, "ROOT", ROOT), \
+                 patch.object(calibrate_api, "OpenAI", return_value=fake_client), \
+                 patch.object(calibrate_api, "evaluate_case", side_effect=[
+                     {"cost": 100, "path": [[0, 1]], "search_seconds": 0.01},
+                     {"cost": 99, "path": [[0, 1]], "search_seconds": 0.01},
+                 ]), \
+                 patch.dict(os.environ, {"OPENAI_API_KEY": "mock-only",
+                                         "TN_RUN_ID": "calibration-test",
+                                         "OPENEVOLVE_REQUEST_BUDGET_DB": "",
+                                         "TN_EXECUTION_MODE": "local"}, clear=False), \
+                 patch("sys.argv", ["calibrate_api.py", "--model", "fake-model",
+                                     "--output", str(output)]), \
+                 redirect_stdout(io.StringIO()):
+                calibrate_api.main()
+            result = json.loads((output / "calibration_result.json").read_text(encoding="utf-8"))
+            self.assertEqual(result["status"], "passed")
+            self.assertTrue(all(check["status"] == "passed"
+                                for check in result["checks"].values()))
+            self.assertTrue((output / "candidate.py").is_file())
+            self.assertTrue((output / "response.txt").is_file())
+            self.assertEqual(fake_client.chat.completions.create.call_count, 1)
+
+    def test_calibration_controlled_improvement_requires_strict_lower_cost(self):
+        from calibrate_api import _check_controlled_improvement
+
+        initial = {"cost": 100}
+        self.assertEqual(
+            _check_controlled_improvement(initial, {"cost": 99}),
+            (True, "candidate cost is strictly lower than initial cost"),
+        )
+        passed, message = _check_controlled_improvement(initial, {"cost": 100})
+        self.assertFalse(passed)
+        self.assertIn("strictly lower", message)
+        passed, message = _check_controlled_improvement(initial, {"cost": 101})
+        self.assertFalse(passed)
+        self.assertIn("strictly lower", message)
+        passed, message = _check_controlled_improvement(initial, {"error": "invalid path"})
+        self.assertFalse(passed)
+        self.assertIn("candidate failed", message)
+        passed, message = _check_controlled_improvement({"error": "initial"}, {"cost": 1})
+        self.assertFalse(passed)
+        self.assertIn("initial program failed", message)
+
+    def test_calibration_controlled_improvement_rejects_non_numeric_costs(self):
+        from calibrate_api import _check_controlled_improvement
+
+        passed, message = _check_controlled_improvement({"cost": "100"}, {"cost": 99})
+        self.assertFalse(passed)
+        self.assertIn("numeric", message)
+        passed, message = _check_controlled_improvement({"cost": 100}, {})
+        self.assertFalse(passed)
+        self.assertIn("numeric", message)
+
+        from calibrate_api import _check_interface
+        from tempfile import TemporaryDirectory
+        with TemporaryDirectory(dir=ROOT) as directory:
+            program = Path(directory) / "candidate.py"
+            program.write_text(
+                "def find_path(inputs, output, sizes, seed=0):\n    return []\n",
+                encoding="utf-8")
+            self.assertTrue(_check_interface(program)[0])
+            program.write_text(
+                "def find_path(inputs, output, sizes):\n    return []\n",
+                encoding="utf-8")
+            self.assertFalse(_check_interface(program)[0])
+
+    def test_calibration_interface_checker_rejects_wrong_defaults_and_extra_parameters(self):
+        from calibrate_api import _check_interface
+        from tempfile import TemporaryDirectory
+        with TemporaryDirectory(dir=ROOT) as directory:
+            program = Path(directory) / "candidate.py"
+            cases = (
+                ("def find_path(inputs, output, sizes, seed=0):\n    return []\n", True),
+                ("def find_path(inputs, output, sizes, seed=1):\n    return []\n", False),
+                ("def find_path(inputs, output, sizes, seed=0, extra=None):\n    return []\n", False),
+                ("def find_path(inputs, output, sizes, *, seed=0):\n    return []\n", False),
+                ("def find_path(inputs, output, sizes, *args, seed=0):\n    return []\n", False),
+            )
+            for source, expected in cases:
+                program.write_text(source, encoding="utf-8")
+                self.assertEqual(_check_interface(program)[0], expected, source)
+
+        import select_discovery
+        from hashlib import sha256
+        from tempfile import TemporaryDirectory
+        from types import SimpleNamespace
+
+        registration = ROOT / "notes" / "formal_registration_2026-10.md"
+        source_hashes = __import__("tnlab.freeze", fromlist=["frozen_file_hashes"]).frozen_file_hashes()
+        initial_hash = sha256((ROOT / "initial_program.py").read_bytes()).hexdigest()
+        synthetic_case = {"name": "case", "inputs": [["a", "b"], ["b", "c"]],
+                          "output": ["a", "c"], "sizes": {"a": 2, "b": 3, "c": 4}}
+        cases = [{"case": "case", "cost": 100, "path": [[0, 1]],
+                  "peak_elements": 6, "search_seconds": 0.01}]
+        with TemporaryDirectory(dir=ROOT) as directory:
+            root = Path(directory)
+            runs = []
+            ratios = {"run-1": 1.20, "run-2": 0.95, "run-3": 1.10,
+                      "run-4": 1.05, "run-5": 1.00}
+            from tnlab.baselines import run_baseline
+            baseline_rows = [run_baseline(synthetic_case, method) for method in
+                             ("greedy", "random-greedy", "simulated-annealing")]
+            baseline_cost = min(row["cost"] for row in baseline_rows)
+            for name, ratio in ratios.items():
+                run = root / name
+                run.mkdir()
+                (run / "preregistration.md").write_bytes(registration.read_bytes())
+                (run / "research_id.txt").write_text("study-test\n", encoding="utf-8")
+                (run / "initial_program.sha256").write_text(initial_hash + "\n", encoding="ascii")
+                (run / "frozen_source_manifest.json").write_text(
+                    json.dumps(source_hashes), encoding="utf-8")
+                (run / "run_id.txt").write_text(name + "\n", encoding="utf-8")
+                code = (ROOT / "initial_program.py").read_text(encoding="utf-8") + "\n# " + name + "\n"
+                candidate = run / "best_recheck.py"
+                candidate.write_text(code, encoding="utf-8")
+                candidate_hash = sha256(candidate.read_bytes()).hexdigest()
+                from tnlab.freeze import snapshot_frozen_data
+                snapshot_frozen_data(run)
+                for frozen_name in ("manifest_v2.json", "develop_v2.json",
+                                     "manifest_v3.json", "final_v3.json", "transfer_v3.json"):
+                    self.assertEqual(
+                        (run / "frozen_data" / frozen_name).read_bytes(),
+                        (ROOT / "data" / frozen_name).read_bytes())
+                baseline_file = run / "development_baselines.json"
+                baseline_file.write_text(json.dumps([{"case": "case", **row}
+                                                     for row in baseline_rows]), encoding="utf-8")
+                archive = run / "runner-image.tar"
+                archive.write_bytes(b"offline runner archive fixture")
+                (run / "runner_image_manifest.json").write_text(json.dumps({
+                    "image_id": "sha256:fixture", "source_sha256": "source-fixture",
+                    "requirements_sha256": sha256((ROOT / "requirements.lock").read_bytes()).hexdigest(),
+                    "archive": archive.name,
+                    "archive_sha256": sha256(archive.read_bytes()).hexdigest()}), encoding="utf-8")
+                (run / "iteration_journal.jsonl").write_text(
+                    "".join(json.dumps({"iteration": index, "status": "accepted"}) + "\n"
+                            for index in range(1, 16)), encoding="utf-8")
+                report = {"develop": {"geometric_ratio_to_best_baseline": ratio},
+                          "search": {"run_id": name, "research_id": "study-test",
+                                     "requests_added_this_run": {"total": 0, "by_kind": {}}},
+                          "environment": {"research_id": "study-test",
+                                          "initial_program_sha256": initial_hash,
+                                          "benchmark_manifest_sha256": sha256(
+                                              (ROOT / "data" / "manifest_v2.json").read_bytes()).hexdigest(),
+                                          "iterations_recorded": 15,
+                                          "develop_set": "develop_v2.json",
+                                          "best_code_sha256": candidate_hash,
+                                          "development_baselines_sha256": sha256(
+                                              baseline_file.read_bytes()).hexdigest(),
+                                          "runner_image_id": "sha256:fixture",
+                                          "runner_image_source_sha256": "source-fixture"}}
+                (run / "development_report.json").write_text(
+                    json.dumps(report), encoding="utf-8")
+                runs.append(run)
+            run_manifest_path = root / "discovery_run_manifest.json"
+            run_manifest_path.write_text(json.dumps({
+                "research_id": "study-test", "run_ids": list(ratios),
+                "runs": [{"run_id": name, "directory": str(root / name),
+                          "status": "completed"} for name in ratios],
+                "registration_sha256": sha256(registration.read_bytes()).hexdigest()}),
+                encoding="utf-8")
+            manifest_bytes = run_manifest_path.read_bytes()
+            run_manifest_path.write_bytes(b"\xef\xbb\xbf" + manifest_bytes)
+            def fake_evaluate_set(candidate, set_name):
+                name = Path(candidate).parent.name
+                result = cases.copy()
+                result[0] = {**cases[0], "cost": round(ratios[name] * baseline_cost, 5)}
+                return SimpleNamespace(metrics={"failure_count": 0.0, "valid_cases": 1.0},
+                                       artifacts={"case_results.json": json.dumps(result)})
+
+            with patch.object(select_discovery, "ROOT", ROOT), \
+                 patch.object(select_discovery, "load_cases", return_value=[synthetic_case]), \
+                 patch.object(select_discovery, "evaluate_set", side_effect=fake_evaluate_set), \
+                 patch.dict(os.environ, {"OPENEVOLVE_REQUEST_BUDGET_DB": str(root / "budget.sqlite3")}, clear=False):
+                from openevolve.utils.request_budget import initialize_request_budget
+                initialize_request_budget(root / "budget.sqlite3", "study-test", 100)
+                result = select_discovery.select_discovery(
+                    runs, root / "selection.json", registration, "study-test", run_manifest_path)
+            self.assertEqual(result["status"], "selected")
+            self.assertEqual(result["eligible_run_count"], 5)
+            self.assertEqual(result["selected"]["run_id"], "run-2")
+            self.assertTrue((root / "selection.md").is_file())
+
+            (runs[0] / "iteration_journal.jsonl").write_text("", encoding="utf-8")
+            with patch.object(select_discovery, "ROOT", ROOT), \
+                 patch.object(select_discovery, "load_cases", return_value=[synthetic_case]), \
+                 patch.object(select_discovery, "evaluate_set", side_effect=fake_evaluate_set), \
+                 patch.dict(os.environ, {"OPENEVOLVE_REQUEST_BUDGET_DB": str(root / "budget.sqlite3")}, clear=False):
+                incomplete = select_discovery.select_discovery(
+                    runs, root / "incomplete.json", registration, "study-test", run_manifest_path)
+            self.assertEqual(incomplete["status"], "inconclusive")
+            self.assertEqual(incomplete["eligible_run_count"], 4)
+            self.assertIn("expected exactly 15 journal iterations", incomplete["rejected_runs"][0]["reasons"][0])
+
+        from openevolve.utils.request_budget import initialize_request_budget
+        from tempfile import TemporaryDirectory
+        with TemporaryDirectory(dir=ROOT) as directory:
+            ledger = Path(directory) / "requests.sqlite3"
+            initialize_request_budget(ledger, "study-a", 100)
+            initialize_request_budget(ledger, "study-a", 100)
+            with self.assertRaisesRegex(RuntimeError, "research ID"):
+                initialize_request_budget(ledger, "study-b", 100)
+            with self.assertRaisesRegex(RuntimeError, "limit"):
+                initialize_request_budget(ledger, "study-a", 99)
+
+    def test_discovery_orchestration_checks_manifest_before_model_probe(self):
+        script = (ROOT / "run.ps1").read_text(encoding="utf-8-sig")
+        self.assertIn("[switch]$ResumeDiscovery", script)
+        self.assertIn("use -ResumeDiscovery to continue its fixed identities", script)
+        self.assertIn("calibration_status", script)
+        self.assertIn("calibration_run_id", script)
+        self.assertIn("$runManifest.runs[$runIndex - 1]", script)
+        self.assertLess(script.index("$runManifestPath ="), script.index("probe_api.py"))
+        self.assertLess(script.index("registration_sha256"), script.index("probe_api.py"))
+        self.assertIn("if ($entry.status -eq 'completed') { continue }", script)
+        self.assertIn("--resume-run $resumePath", script)
+        self.assertIn("Calibration failed under the preregistered one-shot rule", script)
+        self.assertIn("Calibration was interrupted after request processing began", script)
+        self.assertIn("frozen_source_hashes_sha256", script)
+        self.assertIn("Assert-FrozenSources", script)
+
+        powershell = next((candidate for candidate in (
+            "powershell.exe", "pwsh.exe",
+            r"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        ) if shutil.which(candidate) or Path(candidate).is_file()), None)
+        if powershell is None:
+            self.skipTest("Windows PowerShell is unavailable")
+
+        from hashlib import sha256
+        def run_resume_case(status, mutate=None, expect_selection=False,
+                            expect_no_ledger=False):
+            with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+                project = Path(directory) / "experiment"
+                shutil.copytree(ROOT, project, ignore=shutil.ignore_patterns(
+                    ".venv", "results", "tests", "__pycache__", "tmp*"))
+                shutil.copytree(ROOT.parent / "openevolve", Path(directory) / "openevolve")
+                (project / "tests").mkdir()
+                (project / "tests" / "test_smoke.py").write_text(
+                    "import unittest\n"
+                    "class SmokeTest(unittest.TestCase):\n"
+                    "    def test_smoke(self):\n"
+                    "        self.assertTrue(True)\n", encoding="ascii")
+                log = project / "harness.log"
+                (project / "probe_api.py").write_text(
+                    "from pathlib import Path\n"
+                    "import os\n"
+                    "path = Path(os.environ['TN_HARNESS_LOG'])\n"
+                    "path.write_text('probe', encoding='utf-8')\n"
+                    "print('fake-model')\n", encoding="utf-8")
+                (project / "calibrate_api.py").write_text(
+                    "from pathlib import Path\n"
+                    "import os\n"
+                    "path = Path(os.environ['TN_HARNESS_LOG'])\n"
+                    "path.write_text('calibrate', encoding='utf-8')\n",
+                    encoding="utf-8")
+                (project / "select_discovery.py").write_text(
+                    "from pathlib import Path\n"
+                    "import os\n"
+                    "path = Path(os.environ['TN_HARNESS_LOG'])\n"
+                    "path.write_text('select', encoding='utf-8')\n",
+                    encoding="utf-8")
+                from tnlab import freeze
+                with patch.object(freeze, "ROOT", project):
+                    hashes = freeze.frozen_file_hashes()
+                    source_hash = freeze.image_source_hash()
+                docker = project / "docker.cmd"
+                docker.write_text(
+                    "@echo off\n"
+                    'echo [{"Config":{"Labels":{"org.tnlab.source-sha256":"'
+                    + source_hash + '"}}}]\n',
+                    encoding="ascii")
+                registration = project / "notes" / "formal_registration_2026-10.md"
+                manifest = {
+                    "research_id": "tensor-path-discovery-2026-10",
+                    "registration_sha256": sha256(registration.read_bytes()).hexdigest(),
+                    "frozen_source_hashes": hashes,
+                    "frozen_source_hashes_sha256": sha256(json.dumps(
+                        hashes, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
+                    "run_ids": [f"run-{index}" for index in range(1, 6)],
+                    "model": "fake-model",
+                    "calibration_run_id": "calibration-test",
+                    "calibration_status": status,
+                    "calibration_directory": str(project / "results" / "calibration"),
+                    "runs": [{"run_id": f"run-{index}", "status": "completed"}
+                             for index in range(1, 6)],
+                }
+                results = project / "results"
+                results.mkdir()
+                manifest_path = results / "discovery_run_manifest.json"
+                (project / "run.ps1").write_text(
+                    (project / "run.ps1").read_text(encoding="utf-8").replace(
+                        "$venvPython = Join-Path $project '.venv\\Scripts\\python.exe'",
+                        "$venvPython = $env:TN_PYTHON"),
+                    encoding="utf-8")
+                environment = os.environ.copy()
+                environment.update({
+                    "TN_PYTHON": str(ROOT / ".venv" / "Scripts" / "python.exe"),
+                    "OPENAI_API_KEY": "offline-test-only",
+                    "TN_HARNESS_LOG": str(log),
+                    "PATH": str(project) + os.pathsep + environment.get("PATH", ""),
+                })
+                with patch.object(freeze, "ROOT", project):
+                    hashes = freeze.frozen_file_hashes()
+                manifest["frozen_source_hashes"] = hashes
+                manifest["frozen_source_hashes_sha256"] = sha256(json.dumps(
+                    hashes, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+                manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+                if mutate:
+                    mutate(project)
+                completed = subprocess.run(
+                    [powershell, "-NoProfile", "-NonInteractive",
+                     "-File", str(project / "run.ps1"), "-ResumeDiscovery"],
+                    cwd=project, env=environment, capture_output=True, text=True,
+                    encoding="utf-8", errors="replace", timeout=120)
+                contents = log.read_text(encoding="utf-8") if log.exists() else ""
+                if expect_no_ledger:
+                    self.assertFalse((results / "model_request_budget_100.sqlite3").exists())
+                if expect_selection:
+                    self.assertEqual(completed.returncode, 0,
+                                     (completed.stdout or "") + (completed.stderr or ""))
+                    self.assertEqual(contents, "select")
+                else:
+                    self.assertNotEqual(completed.returncode, 0,
+                                        (completed.stdout or "") + (completed.stderr or ""))
+                    self.assertNotIn("probe", contents)
+                    self.assertNotIn("calibrate", contents)
+
+        run_resume_case("failed")
+        run_resume_case("requesting")
+        run_resume_case("completed", lambda project: (project / "config.yaml").write_text(
+            (project / "config.yaml").read_text(encoding="utf-8") + "\n# changed\n",
+            encoding="utf-8"))
+        run_resume_case("completed", lambda project: (project / "docker.cmd").write_text(
+            "@echo off\nexit /b 1\n", encoding="ascii"), expect_no_ledger=True)
+        run_resume_case("completed", expect_selection=True)
+
+        from run_experiment import summarize_previous_run
+        from tempfile import TemporaryDirectory
+        with TemporaryDirectory(dir=ROOT) as directory:
+            run = Path(directory)
+            (run / "research_id.txt").write_text("study-x\n", encoding="utf-8")
+            journal = [{"iteration": 1, "status": "rejected", "error": "invalid path",
+                        "parent_id": "p0", "error_code": "path_semantics",
+                        "stages": [{"stage": "evaluation", "status": "failed"}]}]
+            (run / "iteration_journal.jsonl").write_text(
+                "\n".join(json.dumps(item) for item in journal) + "\n", encoding="utf-8")
+            (run / "checkpoints" / "checkpoint_1").mkdir(parents=True)
+            summary = summarize_previous_run(run)
+            self.assertEqual(summary["research_id"], "study-x")
+            self.assertEqual(Path(summary["latest_checkpoint"]).as_posix(),
+                             "checkpoints/checkpoint_1")
+            self.assertEqual(summary["recent_iterations"][0]["failure"]["error_code"],
+                             "path_semantics")
+            self.assertIn("never appended", summary["prompt_policy"])
+
+    def test_previous_run_summary_is_attached_as_audit_artifact(self):
+        from run_experiment import attach_previous_run_summary
+        from tempfile import TemporaryDirectory
+        with TemporaryDirectory(dir=ROOT) as directory:
+            project = Path(directory)
+            results = project / "results"
+            results.mkdir()
+            previous, current = results / "evolve_old", results / "evolve_new"
+            previous.mkdir()
+            current.mkdir()
+            (previous / "iteration_journal.jsonl").write_text(
+                json.dumps({"iteration": 2, "status": "rejected", "error": "case failed"}) + "\n",
+                encoding="utf-8")
+            with patch("run_experiment.ROOT", project):
+                checksum = attach_previous_run_summary(current)
+            saved = current / "previous_run_summary.json"
+            self.assertEqual(checksum["sha256"], __import__("hashlib").sha256(
+                saved.read_bytes()).hexdigest())
+            self.assertEqual(json.loads(saved.read_text(encoding="utf-8"))["iterations_recorded"], 1)
 
     def test_process_summary_preserves_change_and_failure_history(self):
         from run_experiment import write_process_summary

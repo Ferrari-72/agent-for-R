@@ -279,6 +279,9 @@ class PromptConfig:
     num_top_programs: int = 3
     num_diverse_programs: int = 2
 
+    # Recent failure feedback strategy selected by the experiment configuration.
+    failure_feedback_strategy: str = "openevolve_recent"
+
     # Template stochasticity
     use_template_stochasticity: bool = True
     template_variations: Dict[str, List[str]] = field(default_factory=dict)
@@ -523,6 +526,13 @@ class Config:
 
         if config.database.random_seed is None and config.random_seed is not None:
             config.database.random_seed = config.random_seed
+
+        if config.prompt.failure_feedback_strategy not in {
+            "openevolve_recent", "compact_observations"
+        }:
+            raise ValueError(
+                "prompt.failure_feedback_strategy must be openevolve_recent or compact_observations"
+            )
 
         if len(config.prompt.island_system_messages) > config.database.num_islands:
             raise ValueError(

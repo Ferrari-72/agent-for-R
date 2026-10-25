@@ -30,14 +30,14 @@ def main():
         network = True
     except OSError:
         network = False
-    print(json.dumps({'final_visible': Path('/data/final_v2.json').exists(),
+    print(json.dumps({'final_v3_visible': Path('/data/final_v3.json').exists(),
                       'key_visible': 'OPENAI_API_KEY' in os.environ,
                       'root_writable': writable, 'network': network}))
     return [(0, 1)]
 ''', encoding="utf-8")
         answer, _ = run_candidate(file, CASE)
         checks = json.loads(answer["stdout"])
-        assert checks == {"final_visible": False, "key_visible": False,
+        assert checks == {"final_v3_visible": False, "key_visible": False,
                           "root_writable": False, "network": False}, checks
         file.write_text('''def find_path(inputs, output, sizes, seed=0):
     import time

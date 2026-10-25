@@ -7,8 +7,8 @@ from time import perf_counter
 from openai import OpenAI
 from openevolve.utils.request_budget import reserve_request
 
-BASE_URL = "https://api.siliconflow.cn/v1"
-PREFERRED = ("Qwen/Qwen3.6-27B", "Qwen/Qwen3.5-4B", "Qwen/Qwen3-8B")
+BASE_URL = os.environ.get("TN_API_BASE", "https://api.siliconflow.cn/v1")
+PREFERRED = ("deepseek-ai/DeepSeek-V3.2",)
 PROBE_PROMPT = (
     "Return only a Python function named choose_pair(active). It takes a list "
     "of nonempty sets and returns two different integer positions. Choose the "
@@ -22,7 +22,7 @@ def main():
         raise RuntimeError("OPENAI_API_KEY is missing")
     client = OpenAI(api_key=key, base_url=BASE_URL, timeout=30.0, max_retries=0)
     start = perf_counter()
-    reserve_request("model_list")
+    reserve_request("model_list", run_id=os.environ.get("TN_RUN_ID"))
     models = {item.id for item in client.models.list().data}
     print(f"API model list: {len(models)} models, {perf_counter() - start:.1f}s",
           file=sys.stderr, flush=True)
@@ -33,7 +33,7 @@ def main():
     for model in candidates:
         start = perf_counter()
         try:
-            reserve_request("probe_completion")
+            reserve_request("probe_completion", run_id=os.environ.get("TN_RUN_ID"))
             response = client.chat.completions.create(
                 model=model, messages=[{"role": "user", "content": PROBE_PROMPT}],
                 max_tokens=256, stream=False, timeout=50.0,

@@ -25,48 +25,56 @@ PREFLIGHT_CASE = {"name": "preflight_chain", "inputs": [["a", "b"], ["b", "c"], 
                   "output": ["a", "d"], "sizes": {"a": 2, "b": 3, "c": 4, "d": 5}}
 
 
-def evaluate_case(program_path, case):
+def _run_checked(program_path, case, repeat):
     try:
-        answer, wall_seconds = run_candidate(program_path, case, CASE_TIMEOUT_SECONDS)
+        return run_candidate(program_path, case, CASE_TIMEOUT_SECONDS)
     except subprocess.TimeoutExpired:
-        message = "timeout"
-        return {"case": case["name"], "error": message, "error_code": "timeout",
-                "failure_class": classify_failure("timeout", message)}
+        raise TimeoutError(f"timeout on reproducibility run {repeat}") from None
     except ResourceLimitError:
-        message = "memory limit exceeded"
-        return {"case": case["name"], "error": message,
-                "error_code": "resource_limit",
-                "failure_class": classify_failure("resource_limit", message)}
-    except Exception as exc:
-        message = str(exc)[-1000:]
-        return {"case": case["name"], "error": "candidate error",
-                "error_code": "execution_error", "detail": message,
-                "failure_class": classify_failure("execution_error", message)}
-    try:
-        seconds = float(answer["search_seconds"])
-        if not math.isfinite(seconds) or seconds < 0 or seconds > CASE_TIMEOUT_SECONDS:
-            raise ValueError("candidate search exceeded the time limit")
-        result = score_path(case, answer["path"])
-        if result.peak_elements > MAX_PEAK_ELEMENTS:
-            raise ValueError("peak tensor exceeds the element limit")
-        for repeat in range(1, REPRODUCIBILITY_REPEATS):
-            repeated_answer, _ = run_candidate(program_path, case, CASE_TIMEOUT_SECONDS)
-            if repeated_answer.get("path") != answer["path"]:
-                raise ValueError(
-                    f"candidate is nondeterministic on repeat {repeat + 1}; "
-                    "the same instance and seed produced a different path"
-                )
-        return {"case": case["name"], "path": answer["path"],
-                "cost": result.cost, "peak_elements": result.peak_elements,
-                "search_seconds": seconds,
-                "function_seconds_untrusted": answer.get("function_seconds"),
-                "wall_seconds": wall_seconds,
-                "reproducibility_repeats": REPRODUCIBILITY_REPEATS}
-    except (ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
-        message = str(exc)
-        return {"case": case["name"], "error": message,
-                "error_code": "invalid_path",
-                "failure_class": classify_failure("invalid_path", message)}
+        raise MemoryError(f"memory limit exceeded on reproducibility run {repeat}") from None
+
+
+def _failure_record(case, error_code, message, repeat=None):
+    record = {"case": case["name"], "error": message, "error_code": error_code,
+              "failure_class": classify_failure(error_code, message)}
+    if repeat is not None:
+        record["reproducibility_repeat"] = repeat
+    return record
+
+
+def evaluate_case(program_path, case):
+    for repeat in range(REPRODUCIBILITY_REPEATS):
+        try:
+            answer, wall_seconds = _run_checked(program_path, case, repeat + 1)
+        except TimeoutError as exc:
+            return _failure_record(case, "timeout", str(exc), repeat + 1)
+        except MemoryError as exc:
+            return _failure_record(case, "resource_limit", str(exc), repeat + 1)
+        except Exception as exc:
+            return _failure_record(case, "execution_error", str(exc)[-1000:], repeat + 1)
+        if repeat == 0:
+            first_answer, first_wall = answer, wall_seconds
+            try:
+                seconds = float(answer["search_seconds"])
+                if not math.isfinite(seconds) or seconds < 0 or seconds > CASE_TIMEOUT_SECONDS:
+                    raise ValueError("candidate search exceeded the time limit")
+                result = score_path(case, answer["path"])
+                if result.peak_elements > MAX_PEAK_ELEMENTS:
+                    raise ValueError("peak tensor exceeds the element limit")
+            except (ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+                return _failure_record(case, "invalid_path", str(exc))
+            continue
+        if answer.get("path") != first_answer.get("path"):
+            return _failure_record(
+                case, "nondeterministic",
+                f"candidate returned a different path on reproducibility run {repeat + 1}",
+                repeat + 1)
+    return {"case": case["name"], "path": first_answer["path"],
+            "cost": result.cost, "peak_elements": result.peak_elements,
+            "search_seconds": float(first_answer["search_seconds"]),
+            "function_seconds_untrusted": first_answer.get("function_seconds"),
+            "wall_seconds": first_wall,
+            "reproducibility_repeats": REPRODUCIBILITY_REPEATS}
 
 
 def evaluate_set(program_path, set_name="develop.json"):

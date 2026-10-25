@@ -1,4 +1,4 @@
-max_iterations: 3
+max_iterations: 15
 stop_on_llm_error: true
 checkpoint_interval: 1
 random_seed: 42
@@ -22,6 +22,9 @@ llm:
 
 prompt:
   template_dir: prompts
+  num_top_programs: 2
+  num_diverse_programs: 2
+  failure_feedback_strategy: openevolve_recent
   use_template_stochasticity: false
   system_message: >-
     Improve the contraction path search algorithm. Keep the find_path(inputs,

@@ -10,16 +10,38 @@ ROOT = Path(__file__).resolve().parents[1]
 FILES = (
     "config.yaml", "requirements.lock", "Dockerfile.runner",
     "prompts/diff_user.txt", "prompts/framework_concepts.md",
-    "notes/iteration_audit_2026-10-22.md",
-    "notes/evolution_research_workflow.md",
     "notes/experiment_registration_template.md",
     "candidate_runner.py", "candidate_worker.py", "baseline_runner.py",
     "baseline_worker.py", "tnlab/runner_protocol.py", "openevolve_evaluator.py",
+    "calibrate_api.py",
+    "initial_program.py", "probe_api.py",
     "../openevolve/openevolve/process_parallel.py",
-    "final_evaluation.py", "tnlab/scoring.py", "tnlab/baselines.py",
+    "../openevolve/openevolve/config.py",
+    "../openevolve/openevolve/controller.py",
+    "../openevolve/openevolve/database.py",
+    "../openevolve/openevolve/selection.py",
+    "../openevolve/openevolve/evaluator.py",
+    "../openevolve/openevolve/population.py",
+    "../openevolve/openevolve/prompt/sampler.py",
+    "../openevolve/openevolve/prompt/templates.py",
+    "../openevolve/openevolve/llm/ensemble.py",
+    "../openevolve/openevolve/llm/openai.py",
+    "../openevolve/openevolve/utils/code_utils.py",
+    "../openevolve/openevolve/api.py",
+    "final_evaluation.py", "select_discovery.py", "tnlab/scoring.py", "tnlab/baselines.py",
     "tnlab/comparison.py", "tnlab/execution.py", "tnlab/resource_limits.py",
     "tnlab/instances.py", "prepare_benchmark.py", "run_experiment.py",
-    "tnlab/experience.py",
+    "tnlab/experience.py", "tnlab/prompt_policy.py",
+    "../openevolve/openevolve/prompts/defaults/diff_user.txt",
+    "../openevolve/openevolve/prompts/defaults/evolution_history.txt",
+    "../openevolve/openevolve/prompts/defaults/previous_attempt.txt",
+    "../openevolve/openevolve/prompts/defaults/top_program.txt",
+    "../openevolve/openevolve/prompts/defaults/inspirations_section.txt",
+    "../openevolve/openevolve/prompts/defaults/inspiration_program.txt",
+    "../openevolve/openevolve/prompts/defaults/system_message.txt",
+    "../openevolve/openevolve/prompts/defaults/user_message_with_changes_description.txt",
+    "../openevolve/openevolve/prompts/defaults/full_rewrite_user.txt",
+    "../openevolve/openevolve/prompts/defaults/evaluation.txt",
     "run_baselines.py",
     "tnlab/freeze.py", "run.ps1", "setup.ps1",
     "../openevolve/openevolve/utils/request_budget.py",
@@ -50,6 +72,18 @@ def snapshot_frozen_sources(output):
     (output / "frozen_source_manifest.json").write_text(
         json.dumps(hashes, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return hashes
+
+
+def snapshot_frozen_data(output, develop_set="develop_v2.json"):
+    """Save development and held-out benchmark bytes with each formal run."""
+    output = Path(output)
+    target = output / "frozen_data"
+    target.mkdir(parents=True, exist_ok=True)
+    names = ("manifest_v2.json", develop_set, "manifest_v3.json",
+             "final_v3.json", "transfer_v3.json")
+    for name in names:
+        shutil.copyfile(ROOT / "data" / name, target / name)
+    return names
 
 
 def archive_runner_image(output, image_id, source_hash):

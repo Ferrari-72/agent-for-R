@@ -29,46 +29,76 @@ _worker_event_loop = None
 
 
 def _recent_failure_feedback(programs, artifacts, limit=2):
-    """Give the next generation concrete errors from recent invalid programs."""
+    """Backward-compatible view of the default failure feedback strategy."""
+    text, _evidence = format_failure_feedback(
+        programs, artifacts, strategy="openevolve_recent", limit=limit)
+    return text
+
+
+def _recent_failure_records(programs, artifacts, limit=2):
+    """Return bounded, evidence-linked failures from prior candidate evaluations."""
     failed = sorted(
         (p for p in programs if p.metrics.get("failure_count", 0) > 0),
         key=lambda p: p.iteration_found or 0,
         reverse=True,
     )
-
-
-    notes = []
-    for program in failed[:limit]:
+    records = []
+    for program in failed:
         payload = artifacts.get(program.id, {}).get("case_results.json")
         if not payload:
             continue
         try:
-            records = json.loads(payload)
+            case_records = json.loads(payload)
         except (TypeError, ValueError):
             continue
-        errors = []
-        for record in records:
-            message = record.get("error")
-            if message and record.get("detail"):
-                detail = record["detail"].splitlines()[-1][:240]
-                message = f"{message}: {detail}"
-            failure_class = record.get("failure_class", "unknown")
-            if message:
-                message = f"[{failure_class}] {message}"
-            if message and message not in errors:
-                errors.append(message)
-        if errors:
-            notes.append(f"Iteration {program.iteration_found}: " + "; ".join(errors[:3]))
-    if not notes:
-        return ""
-    return (
-        "\n\n## Recent invalid candidate feedback\n"
-        "Fix these errors before seeking lower contraction cost. "
-        "A failed candidate is not an improvement.\n" + "\n".join(notes)
-    )
+        for index, record in enumerate(case_records):
+            if not isinstance(record, dict) or not record.get("error"):
+                continue
+            detail = str(record.get("detail") or record["error"])
+            records.append({
+                "evidence_id": f"iteration-{program.iteration_found}-program-{program.id}-case-{index}",
+                "iteration": program.iteration_found,
+                "program_id": program.id,
+                "case": record.get("case"),
+                "failure_class": record.get("failure_class", "unknown"),
+                "error_code": record.get("error_code", "unknown"),
+                "error": str(record["error"])[:240],
+                "detail": (detail.strip().splitlines()[-1] if detail.strip() else "")[:240],
+            })
+            if len(records) >= limit * 3:
+                return records
+    return records
+
+
+def format_failure_feedback(programs, artifacts, strategy="openevolve_recent", limit=2):
+    """Format bounded prior failure observations for the next prompt."""
+    if strategy not in {"openevolve_recent", "compact_observations"}:
+        raise ValueError("unknown failure feedback strategy")
+    records = _recent_failure_records(programs, artifacts, limit)
+    if not records:
+        return "", records
+    records = records[:limit]
+    if strategy == "openevolve_recent":
+        lines = []
+        for item in records:
+            detail = item["detail"] or item["error"]
+            lines.append(f"Iteration {item['iteration']} [{item['failure_class']}]: "
+                         f"{item['error']}: {detail}")
+        text = ("\n\n## Recent invalid candidate feedback\n"
+                "Fix these errors before seeking lower contraction cost. "
+                "These are observed failures, not proven causes.\n" +
+                "\n".join(dict.fromkeys(lines)))
+    else:
+        compact = [{key: item[key] for key in (
+            "evidence_id", "iteration", "case", "failure_class", "error_code", "detail")}
+                   for item in records]
+        text = ("\n\n## Recent failure observations\n" +
+                json.dumps(compact, ensure_ascii=False, sort_keys=True))
+    return text, records
 
 
 def format_pipeline_feedback(errors, limit=3):
+
     """Format failures that happened before a program entered the database."""
     if not errors:
         return ""
@@ -141,6 +171,7 @@ class SerializableResult:
     token_usage: Optional[Dict[str, Any]] = None
     stages: Optional[List[Dict[str, Any]]] = None
     error_code: Optional[str] = None
+    prompt_metadata: Optional[Dict[str, Any]] = None
 
 
 def _worker_init(config_dict: dict, evaluation_file: str, parent_env: dict = None) -> None:
@@ -316,9 +347,35 @@ def _run_iteration_worker(
             current_changes_description=parent_changes_desc,
             island_id=db_snapshot.get("sampling_island"),
         )
-        prompt["user"] += _recent_failure_feedback(island_programs, db_snapshot["artifacts"])
+        failure_strategy = _worker_config.prompt.failure_feedback_strategy
+        failure_feedback, failure_evidence = format_failure_feedback(
+            island_programs, db_snapshot["artifacts"], strategy=failure_strategy)
+        prompt["user"] += failure_feedback
         prompt["user"] += format_pipeline_feedback(
             db_snapshot.get("recent_iteration_errors", []))
+        prompt_metadata = {
+            "history_policy": {
+                "id": "oe_history_v1",
+                "parent_mode": "single_parent_mutation",
+                "top_count": len(programs_for_prompt[:_worker_config.prompt.num_top_programs]),
+                "diverse_count": max(0, len(programs_for_prompt) -
+                                      _worker_config.prompt.num_top_programs),
+                "previous_attempt_count": len(best_programs_only),
+                "inspiration_count": len(inspirations),
+            },
+            "feedback_strategy": failure_strategy,
+            "failure_policy_id": "openevolve_recent_v1" if failure_strategy ==
+                                 "openevolve_recent" else "compact_observations_v1",
+            "failure_component": "openevolve.recent_failure_feedback",
+            "failure_component_version": "2",
+            "pipeline_policy_id": "append_recent_pipeline_v1",
+            "pipeline_feedback_count": min(3, len(db_snapshot.get("recent_iteration_errors", []))),
+            "experience_policy_id": "experience_none_v1",
+            "cross_run_policy_id": "cross_run_audit_only_v1",
+            "input_evidence_ids": [item["evidence_id"] for item in failure_evidence],
+            "output_sha256": hashlib.sha256(failure_feedback.encode("utf-8")).hexdigest(),
+            "failure_evidence": failure_evidence,
+        }
 
         iteration_start = time.time()
         stage_started = time.monotonic()
@@ -334,6 +391,7 @@ def _run_iteration_worker(
                                    else "patch_parse_apply", "status": "failed",
                                    "error_code": code,
                                    "seconds": time.monotonic() - stage_started}],
+                prompt_metadata=prompt_metadata,
             )
 
         # Generate code modification (sync wrapper for async)
@@ -508,6 +566,7 @@ def _run_iteration_worker(
             target_island=target_island,
             token_usage=token_usage,
             stages=stages,
+            prompt_metadata=prompt_metadata,
         )
 
     except Exception as e:
@@ -757,6 +816,13 @@ class ProcessParallelController:
             destination = artifact_dir / name
             destination.write_text(str(content), encoding="utf-8")
             files[name] = str(destination.relative_to(path.parent))
+        failure_evidence = (record.get("prompt_metadata") or {}).get("failure_evidence")
+        if failure_evidence:
+            artifact_dir.mkdir(parents=True, exist_ok=True)
+            destination = artifact_dir / "failure_evidence.json"
+            destination.write_text(json.dumps(failure_evidence, ensure_ascii=False, indent=2),
+                                  encoding="utf-8")
+            files["failure_evidence"] = str(destination.relative_to(path.parent))
         record["artifact_files"] = files
         with path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
@@ -915,6 +981,7 @@ class ProcessParallelController:
                           "prompt": result.prompt,
                           "llm_response": result.llm_response,
                           "token_usage": result.token_usage,
+                          "prompt_metadata": result.prompt_metadata,
                           "stages": list(result.stages or []),
                           "artifacts": result.artifacts}
 

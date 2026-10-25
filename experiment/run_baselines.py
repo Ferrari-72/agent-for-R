@@ -12,7 +12,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--set", default="develop_v2.json",
                         choices=("develop.json", "holdout.json", "develop_v2.json",
-                                 "final_v2.json", "transfer_v2.json"))
+                                 "final_v2.json", "transfer_v2.json",
+                                 "final_v3.json", "transfer_v3.json"))
     parser.add_argument("--repeats", type=int, default=32)
     parser.add_argument("--container", action="store_true",
                         help="run algorithms in the isolated Docker image")

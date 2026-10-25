@@ -10,6 +10,7 @@ import json
 import os
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 os.environ.setdefault("OPENAI_API_KEY", "test")
@@ -274,6 +275,53 @@ class TestWorkerEnforceEvolveBlocks(_WorkerTestBase):
         result = self._run(f"```python\n{rewrite}\n```")
         self.assertIsNone(result.error)
         self.assertEqual(self.evaluated_code(), BLOCK_PARENT.replace("return 1", "return 2"))
+
+    def test_config_rejects_unknown_failure_feedback_strategy(self):
+        with self.assertRaisesRegex(ValueError, "failure_feedback_strategy"):
+            Config.from_dict({"prompt": {"failure_feedback_strategy": "invented"}})
+
+    def test_failure_feedback_strategies_render_observations(self):
+        import json
+        from openevolve.process_parallel import format_failure_feedback
+
+        parent = Program(id="bad", code="x", metrics={"failure_count": 1},
+                         iteration_found=4)
+        artifacts = {"bad": {"case_results.json": json.dumps([{
+            "case": "chain", "error": "invalid path", "error_code": "invalid_path",
+            "failure_class": "path_semantics",
+            "detail": "Traceback\\nIndexError: stale position",
+        }])}}
+        compact, evidence = format_failure_feedback([parent], artifacts)
+        structured, structured_evidence = format_failure_feedback(
+            [parent], artifacts, strategy="compact_observations")
+
+        self.assertIn("stale position", compact)
+        self.assertIn("observed failures", compact)
+        self.assertIn('"failure_class": "path_semantics"', structured)
+        self.assertEqual(evidence, structured_evidence)
+        self.assertEqual(evidence[0]["iteration"], 4)
+        self.assertEqual(evidence[0]["case"], "chain")
+        self.assertIn("observed failures", compact)
+        self.assertEqual(format_failure_feedback([parent], artifacts,
+                                                  strategy="openevolve_recent")[1], evidence)
+
+    def test_iteration_artifact_saves_failure_evidence_and_component_metadata(self):
+        import json
+        with tempfile.TemporaryDirectory() as directory:
+            journal = os.path.join(directory, "iteration_journal.jsonl")
+            controller = object.__new__(process_parallel_module.ProcessParallelController)
+            evidence = [{"evidence_id": "failure-1", "failure_class": "resource"}]
+            metadata = {"failure_component": "openevolve.recent_failure_feedback",
+                        "failure_component_version": "2",
+                        "input_evidence_ids": ["failure-1"],
+                        "output_sha256": "abc", "failure_evidence": evidence}
+            with patch.dict(os.environ, {"OPENEVOLVE_ITERATION_JOURNAL": journal}):
+                controller._record_iteration({"iteration": 2, "status": "rejected",
+                                              "prompt_metadata": metadata})
+            record = json.loads(Path(journal).read_text(encoding="utf-8").splitlines()[0])
+            artifact = Path(directory) / record["artifact_files"]["failure_evidence"]
+            self.assertEqual(json.loads(artifact.read_text(encoding="utf-8")), evidence)
+            self.assertEqual(record["prompt_metadata"]["input_evidence_ids"], ["failure-1"])
 
     def test_config_loads_from_dict(self):
         config = Config.from_dict({"enforce_evolve_blocks": True})

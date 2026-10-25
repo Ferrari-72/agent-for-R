@@ -84,4 +84,22 @@ def run_candidate(program_path, case, timeout=10):
 
 def run_baseline(case, method, timeout=10):
     """Use the same resource limits as candidate search in formal runs."""
+    mode = os.environ.get("TN_EXECUTION_MODE", "container")
+    if mode == "local":
+        import sys
+        env = os.environ.copy()
+        env["PYTHONHASHSEED"] = "0"
+        start = perf_counter()
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "baseline_worker.py")],
+            input=json.dumps({"case": case, "method": method}),
+            text=True, capture_output=True, timeout=timeout + 5,
+            cwd=ROOT, env=env,
+        )
+        wall = perf_counter() - start
+        if result.returncode:
+            raise RuntimeError(result.stderr[-1000:] or f"baseline worker exited {result.returncode}")
+        return json.loads(result.stdout), wall
+    if mode != "container":
+        raise ValueError(f"unknown execution mode: {mode}")
     return _run_container("/baseline_runner.py", {"case": case, "method": method}, timeout)
