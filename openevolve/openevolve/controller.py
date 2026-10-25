@@ -307,6 +307,19 @@ class OpenEvolve:
         target_score: Optional[float] = None,
         checkpoint_path: Optional[str] = None,
     ) -> Optional[Program]:
+        """Run evolution while protecting every run-scoped resource operation."""
+        try:
+            self._ensure_run_resources()
+            return await self._run_with_resources(iterations, target_score, checkpoint_path)
+        finally:
+            self._cleanup_run_resources(primary_exception=sys.exc_info()[1])
+
+    async def _run_with_resources(
+        self,
+        iterations: Optional[int] = None,
+        target_score: Optional[float] = None,
+        checkpoint_path: Optional[str] = None,
+    ) -> Optional[Program]:
         """
         Run the evolution process with improved parallel processing
 
@@ -319,16 +332,10 @@ class OpenEvolve:
             Best program found
         """
         max_iterations = iterations or self.config.max_iterations
-        self._ensure_run_resources()
-        primary_exception = None
         # Determine starting iteration
         start_iteration = 0
         if checkpoint_path and os.path.exists(checkpoint_path):
-            try:
-                self._load_checkpoint(checkpoint_path)
-            except BaseException:
-                self._cleanup_run_resources(primary_exception=sys.exc_info()[1])
-                raise
+            self._load_checkpoint(checkpoint_path)
             start_iteration = self.database.last_iteration + 1
             logger.info(f"Resuming from checkpoint at iteration {start_iteration}")
         else:
@@ -347,52 +354,43 @@ class OpenEvolve:
             logger.info("Adding initial program to database")
             initial_program_id = str(uuid.uuid4())
 
-            # Evaluate the initial program
-            try:
-                initial_metrics = await self.evaluator.evaluate_program(
-                    self.initial_program_code, initial_program_id
-                )
-            except BaseException:
-                self._cleanup_run_resources(primary_exception=sys.exc_info()[1])
-                raise
+            initial_metrics = await self.evaluator.evaluate_program(
+                self.initial_program_code, initial_program_id
+            )
 
-            try:
-                initial_program = Program(
-                    id=initial_program_id,
-                    code=self.initial_program_code,
-                    changes_description=self.config.prompt.initial_changes_description,
-                    language=self.config.language,
-                    metrics=initial_metrics,
-                    iteration_found=start_iteration,
-                )
+            initial_program = Program(
+                id=initial_program_id,
+                code=self.initial_program_code,
+                changes_description=self.config.prompt.initial_changes_description,
+                language=self.config.language,
+                metrics=initial_metrics,
+                iteration_found=start_iteration,
+            )
 
-                self.database.add(initial_program)
+            self.database.add(initial_program)
 
-                # Check for and store artifacts from initial program
-                initial_artifacts = self.evaluator.get_pending_artifacts(initial_program_id)
-                if initial_artifacts:
-                    self.database.store_artifacts(initial_program_id, initial_artifacts)
-                    logger.info(f"Stored artifacts for initial program")
+            # Check for and store artifacts from initial program
+            initial_artifacts = self.evaluator.get_pending_artifacts(initial_program_id)
+            if initial_artifacts:
+                self.database.store_artifacts(initial_program_id, initial_artifacts)
+                logger.info("Stored artifacts for initial program")
 
-                # Check if combined_score is present in the metrics
-                if "combined_score" not in initial_metrics:
-                    # Calculate average of numeric metrics
-                    numeric_metrics = [
-                        v
-                        for v in initial_metrics.values()
-                        if isinstance(v, (int, float)) and not isinstance(v, bool)
-                    ]
-                    if numeric_metrics:
-                        avg_score = sum(numeric_metrics) / len(numeric_metrics)
-                        logger.warning(
-                            f"⚠️  No 'combined_score' metric found in evaluation results. "
-                            f"Using average of all numeric metrics ({avg_score:.4f}) for evolution guidance. "
-                            f"For better evolution results, please modify your evaluator to return a 'combined_score' "
-                            f"metric that properly weights different aspects of program performance."
-                        )
-            except BaseException:
-                self._cleanup_run_resources(primary_exception=sys.exc_info()[1])
-                raise
+            # Check if combined_score is present in the metrics
+            if "combined_score" not in initial_metrics:
+                # Calculate average of numeric metrics
+                numeric_metrics = [
+                    v
+                    for v in initial_metrics.values()
+                    if isinstance(v, (int, float)) and not isinstance(v, bool)
+                ]
+                if numeric_metrics:
+                    avg_score = sum(numeric_metrics) / len(numeric_metrics)
+                    logger.warning(
+                        f"⚠️  No 'combined_score' metric found in evaluation results. "
+                        f"Using average of all numeric metrics ({avg_score:.4f}) for evolution guidance. "
+                        f"For better evolution results, please modify your evaluator to return a 'combined_score' "
+                        f"metric that properly weights different aspects of program performance."
+                    )
         else:
             logger.info(
                 f"Skipping initial program addition (resuming from iteration {start_iteration} "
@@ -400,76 +398,73 @@ class OpenEvolve:
             )
 
         # Initialize improved parallel processing
-        try:
-            self.parallel_controller = ProcessParallelController(
-                self.config,
-                self.evaluation_file,
-                self.database,
-                self.evolution_tracer,
-                file_suffix=self.config.file_suffix,
-                island_selector=self.island_selector,
-            )
+        self.parallel_controller = ProcessParallelController(
+            self.config,
+            self.evaluation_file,
+            self.database,
+            self.evolution_tracer,
+            file_suffix=self.config.file_suffix,
+            island_selector=self.island_selector,
+        )
 
-            # Set up signal handlers for graceful shutdown
-            def signal_handler(signum, frame):
-                logger.info(f"Received signal {signum}, initiating graceful shutdown...")
-                self.parallel_controller.request_shutdown()
+        # Set up signal handlers for graceful shutdown
+        def signal_handler(signum, frame):
+            logger.info(f"Received signal {signum}, initiating graceful shutdown...")
+            self.parallel_controller.request_shutdown()
 
-                # Set up a secondary handler for immediate exit if user presses Ctrl+C again
-                def force_exit_handler(signum, frame):
-                    logger.info("Force exit requested - terminating immediately")
-                    import sys
+            # Set up a secondary handler for immediate exit if user presses Ctrl+C again
+            def force_exit_handler(signum, frame):
+                logger.info("Force exit requested - terminating immediately")
+                import sys
 
-                    sys.exit(0)
+                sys.exit(0)
 
-                signal.signal(signal.SIGINT, force_exit_handler)
+            signal.signal(signal.SIGINT, force_exit_handler)
 
-            signal.signal(signal.SIGINT, signal_handler)
-            signal.signal(signal.SIGTERM, signal_handler)
+        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGTERM, signal_handler)
 
-            self.parallel_controller.start()
+        self.parallel_controller.start()
 
-            # When starting from iteration 0, we've already done the initial program evaluation
-            # So we need to adjust the start_iteration for the actual evolution
-            evolution_start = start_iteration
-            evolution_iterations = max_iterations
+        # When starting from iteration 0, we've already done the initial program evaluation
+        # So we need to adjust the start_iteration for the actual evolution
+        evolution_start = start_iteration
+        evolution_iterations = max_iterations
 
-            # If we just added the initial program at iteration 0, start evolution from iteration 1
-            if should_add_initial and start_iteration == 0:
-                evolution_start = 1
-                # User expects max_iterations evolutionary iterations AFTER the initial program
-                # So we don't need to reduce evolution_iterations
+        # If we just added the initial program at iteration 0, start evolution from iteration 1
+        if should_add_initial and start_iteration == 0:
+            evolution_start = 1
+            # User expects max_iterations evolutionary iterations AFTER the initial program
+            # So we don't need to reduce evolution_iterations
 
-            # Run evolution with improved parallel processing and checkpoint callback
-            await self._run_evolution_with_checkpoints(
-                evolution_start, evolution_iterations, target_score
-            )
+        # Run evolution with improved parallel processing and checkpoint callback
+        await self._run_evolution_with_checkpoints(
+            evolution_start, evolution_iterations, target_score
+        )
 
-            best_program = None
-            if self.database.best_program_id:
-                best_program = self.database.get(self.database.best_program_id)
-                logger.info(f"Using tracked best program: {self.database.best_program_id}")
+        best_program = None
+        if self.database.best_program_id:
+            best_program = self.database.get(self.database.best_program_id)
+            logger.info(f"Using tracked best program: {self.database.best_program_id}")
 
-            if best_program is None:
-                best_program = self.database.get_best_program()
-                logger.info("Using calculated best program (tracked program not found)")
+        if best_program is None:
+            best_program = self.database.get_best_program()
+            logger.info("Using calculated best program (tracked program not found)")
 
-            if best_program:
-                if self.parallel_controller and self.parallel_controller.early_stopping_triggered:
-                    logger.info(
-                        f"🛑 Evolution complete via early stopping. Best program has metrics: "
-                        f"{format_metrics_safe(best_program.metrics)}"
-                    )
-                else:
-                    logger.info(
-                        f"Evolution complete. Best program has metrics: "
-                        f"{format_metrics_safe(best_program.metrics)}"
-                    )
-                self._save_best_program(best_program)
+        if best_program:
+            if self.parallel_controller and self.parallel_controller.early_stopping_triggered:
+                logger.info(
+                    f"🛑 Evolution complete via early stopping. Best program has metrics: "
+                    f"{format_metrics_safe(best_program.metrics)}"
+                )
             else:
-                logger.warning("No valid programs found during evolution")
-        finally:
-            self._cleanup_run_resources(primary_exception=sys.exc_info()[1])
+                logger.info(
+                    f"Evolution complete. Best program has metrics: "
+                    f"{format_metrics_safe(best_program.metrics)}"
+                )
+            self._save_best_program(best_program)
+        else:
+            logger.warning("No valid programs found during evolution")
 
         return best_program
 

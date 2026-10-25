@@ -64,6 +64,62 @@ class TestInitialProgramArtifacts(unittest.TestCase):
         config.prompt.include_artifacts = True
         return config
 
+    def test_run_resource_rebuild_failure_closes_existing_resources(self):
+        controller = OpenEvolve(
+            initial_program_path=self.program_file,
+            evaluation_file=self.eval_file,
+            config=self._make_config(),
+            output_dir=os.path.join(self.test_dir, "resource-rebuild-failure-out"),
+        )
+        handlers = list(controller._run_logging_handlers)
+        tracer = unittest.mock.Mock()
+        controller.evolution_tracer = tracer
+        with patch.object(controller, "_ensure_run_resources", side_effect=RuntimeError("rebuild failed")):
+            with self.assertRaisesRegex(RuntimeError, "rebuild failed"):
+                asyncio.run(controller.run(iterations=1))
+        self.assertFalse(set(handlers).intersection(logging.getLogger().handlers))
+        self.assertEqual(controller._run_logging_handlers, [])
+        tracer.close.assert_called_once()
+
+    def test_parallel_controller_construction_failure_closes_run_resources(self):
+        controller = OpenEvolve(
+            initial_program_path=self.program_file,
+            evaluation_file=self.eval_file,
+            config=self._make_config(),
+            output_dir=os.path.join(self.test_dir, "controller-construction-failure-out"),
+        )
+        handlers = list(controller._run_logging_handlers)
+        tracer = unittest.mock.Mock()
+        controller.evolution_tracer = tracer
+        with patch(
+            "openevolve.controller.ProcessParallelController",
+            side_effect=RuntimeError("controller construction failed"),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "controller construction failed"):
+                asyncio.run(controller.run(iterations=1))
+        self.assertFalse(set(handlers).intersection(logging.getLogger().handlers))
+        self.assertEqual(controller._run_logging_handlers, [])
+        tracer.close.assert_called_once()
+
+    def test_parallel_controller_start_failure_closes_run_resources(self):
+        controller = OpenEvolve(
+            initial_program_path=self.program_file,
+            evaluation_file=self.eval_file,
+            config=self._make_config(),
+            output_dir=os.path.join(self.test_dir, "controller-start-failure-out"),
+        )
+        handlers = list(controller._run_logging_handlers)
+        tracer = unittest.mock.Mock()
+        controller.evolution_tracer = tracer
+        with patch("openevolve.controller.ProcessParallelController") as mock_ppc:
+            mock_ppc.return_value.start.side_effect = RuntimeError("controller start failed")
+            with self.assertRaisesRegex(RuntimeError, "controller start failed"):
+                asyncio.run(controller.run(iterations=1))
+        self.assertIsNone(controller.parallel_controller)
+        self.assertFalse(set(handlers).intersection(logging.getLogger().handlers))
+        self.assertEqual(controller._run_logging_handlers, [])
+        tracer.close.assert_called_once()
+
     def test_initial_program_artifacts_are_stored(self):
         config = self._make_config()
         controller = OpenEvolve(
