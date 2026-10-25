@@ -22,9 +22,11 @@ class TestArtifactsIntegration(unittest.TestCase):
         # Set up event loop for async operations in tests
         try:
             self.loop = asyncio.get_event_loop()
+            self.owns_loop = False
         except RuntimeError:
             self.loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.loop)
+            self.owns_loop = True
 
         # Create temporary directory for database
         self.temp_dir = tempfile.mkdtemp()
@@ -102,6 +104,8 @@ def evaluate_stage1(program_path):
             # Run the loop briefly to let cancellations process
             if pending:
                 self.loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+            if getattr(self, "owns_loop", False):
+                self.loop.close()
 
     def test_compile_failure_artifact_capture(self):
         """Test that compilation failures are captured as artifacts"""
@@ -264,9 +268,11 @@ class TestArtifactsPersistence(unittest.TestCase):
         # Set up event loop for async operations in tests
         try:
             self.loop = asyncio.get_event_loop()
+            self.owns_loop = False
         except RuntimeError:
             self.loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.loop)
+            self.owns_loop = True
 
         self.temp_dir = tempfile.mkdtemp()
         config = DatabaseConfig(db_path=self.temp_dir)
@@ -282,6 +288,8 @@ class TestArtifactsPersistence(unittest.TestCase):
             # Run the loop briefly to let cancellations process
             if pending:
                 self.loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+            if getattr(self, "owns_loop", False):
+                self.loop.close()
 
     def test_save_load_artifacts(self):
         """Test that artifacts survive database save/load cycle"""

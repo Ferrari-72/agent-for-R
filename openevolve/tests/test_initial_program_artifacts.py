@@ -124,6 +124,60 @@ class TestInitialProgramArtifacts(unittest.TestCase):
                 )
         self.assertEqual(logging.getLogger().handlers, before)
 
+    def test_checkpoint_load_failure_closes_run_resources(self):
+        controller = OpenEvolve(
+            initial_program_path=self.program_file,
+            evaluation_file=self.eval_file,
+            config=self._make_config(),
+            output_dir=os.path.join(self.test_dir, "checkpoint-failure-out"),
+        )
+        handlers = list(controller._run_logging_handlers)
+        checkpoint_path = os.path.join(self.test_dir, "checkpoint.json")
+        with open(checkpoint_path, "w") as stream:
+            stream.write("{}");
+        tracer = unittest.mock.Mock()
+        controller.evolution_tracer = tracer
+        with patch.object(controller, "_load_checkpoint", side_effect=RuntimeError("checkpoint failed")):
+            with self.assertRaisesRegex(RuntimeError, "checkpoint failed"):
+                asyncio.run(controller.run(iterations=1, checkpoint_path=checkpoint_path))
+        self.assertFalse(set(handlers).intersection(logging.getLogger().handlers))
+        self.assertEqual(controller._run_logging_handlers, [])
+        tracer.close.assert_called_once()
+
+    def test_initial_program_construction_failure_closes_run_resources(self):
+        controller = OpenEvolve(
+            initial_program_path=self.program_file,
+            evaluation_file=self.eval_file,
+            config=self._make_config(),
+            output_dir=os.path.join(self.test_dir, "construction-failure-out"),
+        )
+        handlers = list(controller._run_logging_handlers)
+        tracer = unittest.mock.Mock()
+        controller.evolution_tracer = tracer
+        with patch("openevolve.controller.Program", side_effect=RuntimeError("program failed")):
+            with self.assertRaisesRegex(RuntimeError, "program failed"):
+                asyncio.run(controller.run(iterations=1))
+        self.assertFalse(set(handlers).intersection(logging.getLogger().handlers))
+        self.assertEqual(controller._run_logging_handlers, [])
+        tracer.close.assert_called_once()
+
+    def test_initial_program_database_failure_closes_run_resources(self):
+        controller = OpenEvolve(
+            initial_program_path=self.program_file,
+            evaluation_file=self.eval_file,
+            config=self._make_config(),
+            output_dir=os.path.join(self.test_dir, "database-failure-out"),
+        )
+        handlers = list(controller._run_logging_handlers)
+        tracer = unittest.mock.Mock()
+        controller.evolution_tracer = tracer
+        with patch.object(controller.database, "add", side_effect=RuntimeError("database failed")):
+            with self.assertRaisesRegex(RuntimeError, "database failed"):
+                asyncio.run(controller.run(iterations=1))
+        self.assertFalse(set(handlers).intersection(logging.getLogger().handlers))
+        self.assertEqual(controller._run_logging_handlers, [])
+        tracer.close.assert_called_once()
+
     def test_initial_evaluation_failure_closes_run_logging(self):
         controller = OpenEvolve(
             initial_program_path=self.program_file,

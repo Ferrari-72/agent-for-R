@@ -139,9 +139,11 @@ class TestEvaluatorArtifacts(unittest.TestCase):
         # Set up event loop for async operations in tests
         try:
             self.loop = asyncio.get_event_loop()
+            self.owns_loop = False
         except RuntimeError:
             self.loop = asyncio.new_event_loop()
             asyncio.set_event_loop(self.loop)
+            self.owns_loop = True
 
         # Create a mock evaluation file
         self.temp_eval_file = tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False)
@@ -167,6 +169,8 @@ def evaluate(program_path):
             # Run the loop briefly to let cancellations process
             if pending:
                 self.loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+            if getattr(self, "owns_loop", False):
+                self.loop.close()
 
     def test_evaluate_program_backward_compatibility(self):
         """Test that old evaluators still work unchanged"""

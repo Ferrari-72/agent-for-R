@@ -4,7 +4,6 @@ import asyncio
 import tempfile
 import unittest
 from collections import Counter
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -85,13 +84,13 @@ class TestIslandSystemMessages(unittest.TestCase):
                 _worker_llm_ensemble=llm,
             ),
         ):
-            with ThreadPoolExecutor(max_workers=3) as executor:
-                list(
-                    executor.map(
-                        lambda args: process_parallel._run_iteration_worker(*args),
-                        submitted,
-                    )
-                )
+            process_parallel._worker_event_loop = None
+            for args in submitted:
+                process_parallel._run_iteration_worker(*args)
+            worker_loop = process_parallel._worker_event_loop
+            if worker_loop is not None and not worker_loop.is_closed():
+                worker_loop.close()
+            process_parallel._worker_event_loop = None
 
         self.assertEqual(
             Counter(

@@ -324,7 +324,11 @@ class OpenEvolve:
         # Determine starting iteration
         start_iteration = 0
         if checkpoint_path and os.path.exists(checkpoint_path):
-            self._load_checkpoint(checkpoint_path)
+            try:
+                self._load_checkpoint(checkpoint_path)
+            except BaseException:
+                self._cleanup_run_resources(primary_exception=sys.exc_info()[1])
+                raise
             start_iteration = self.database.last_iteration + 1
             logger.info(f"Resuming from checkpoint at iteration {start_iteration}")
         else:
@@ -352,39 +356,43 @@ class OpenEvolve:
                 self._cleanup_run_resources(primary_exception=sys.exc_info()[1])
                 raise
 
-            initial_program = Program(
-                id=initial_program_id,
-                code=self.initial_program_code,
-                changes_description=self.config.prompt.initial_changes_description,
-                language=self.config.language,
-                metrics=initial_metrics,
-                iteration_found=start_iteration,
-            )
+            try:
+                initial_program = Program(
+                    id=initial_program_id,
+                    code=self.initial_program_code,
+                    changes_description=self.config.prompt.initial_changes_description,
+                    language=self.config.language,
+                    metrics=initial_metrics,
+                    iteration_found=start_iteration,
+                )
 
-            self.database.add(initial_program)
+                self.database.add(initial_program)
 
-            # Check for and store artifacts from initial program
-            initial_artifacts = self.evaluator.get_pending_artifacts(initial_program_id)
-            if initial_artifacts:
-                self.database.store_artifacts(initial_program_id, initial_artifacts)
-                logger.info(f"Stored artifacts for initial program")
+                # Check for and store artifacts from initial program
+                initial_artifacts = self.evaluator.get_pending_artifacts(initial_program_id)
+                if initial_artifacts:
+                    self.database.store_artifacts(initial_program_id, initial_artifacts)
+                    logger.info(f"Stored artifacts for initial program")
 
-            # Check if combined_score is present in the metrics
-            if "combined_score" not in initial_metrics:
-                # Calculate average of numeric metrics
-                numeric_metrics = [
-                    v
-                    for v in initial_metrics.values()
-                    if isinstance(v, (int, float)) and not isinstance(v, bool)
-                ]
-                if numeric_metrics:
-                    avg_score = sum(numeric_metrics) / len(numeric_metrics)
-                    logger.warning(
-                        f"⚠️  No 'combined_score' metric found in evaluation results. "
-                        f"Using average of all numeric metrics ({avg_score:.4f}) for evolution guidance. "
-                        f"For better evolution results, please modify your evaluator to return a 'combined_score' "
-                        f"metric that properly weights different aspects of program performance."
-                    )
+                # Check if combined_score is present in the metrics
+                if "combined_score" not in initial_metrics:
+                    # Calculate average of numeric metrics
+                    numeric_metrics = [
+                        v
+                        for v in initial_metrics.values()
+                        if isinstance(v, (int, float)) and not isinstance(v, bool)
+                    ]
+                    if numeric_metrics:
+                        avg_score = sum(numeric_metrics) / len(numeric_metrics)
+                        logger.warning(
+                            f"⚠️  No 'combined_score' metric found in evaluation results. "
+                            f"Using average of all numeric metrics ({avg_score:.4f}) for evolution guidance. "
+                            f"For better evolution results, please modify your evaluator to return a 'combined_score' "
+                            f"metric that properly weights different aspects of program performance."
+                        )
+            except BaseException:
+                self._cleanup_run_resources(primary_exception=sys.exc_info()[1])
+                raise
         else:
             logger.info(
                 f"Skipping initial program addition (resuming from iteration {start_iteration} "
