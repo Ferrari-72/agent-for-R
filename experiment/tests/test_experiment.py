@@ -1212,6 +1212,102 @@ class CandidateTests(unittest.TestCase):
                 encoding="utf-8").splitlines()[-1])
             self.assertEqual((last["before"], last["resume"]), (4, True))
 
+    def test_powershell_calibration_failure_is_terminal_and_recorded(self):
+        powershell = next((candidate for candidate in (
+            "powershell.exe", "pwsh.exe",
+            r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",
+        ) if shutil.which(candidate) or Path(candidate).is_file()), None)
+        if powershell is None:
+            self.skipTest("Windows PowerShell is unavailable")
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            project = Path(directory) / "experiment"
+            shutil.copytree(ROOT, project, ignore=shutil.ignore_patterns(
+                ".venv", "results", "tests", "__pycache__", "tmp*"))
+            shutil.copytree(ROOT.parent / "openevolve", Path(directory) / "openevolve")
+            (project / "tests").mkdir()
+            (project / "tests" / "test_smoke.py").write_text(
+                "import unittest\nclass SmokeTest(unittest.TestCase):\n"
+                "    def test_smoke(self): self.assertTrue(True)\n", encoding="ascii")
+            (project / "probe_api.py").write_text(
+                "from pathlib import Path\n"
+                "with Path('fake_calls.txt').open('a') as log: log.write('probe\\n')\n"
+                "print('deepseek-ai/DeepSeek-V3.2')\n", encoding="ascii")
+            (project / "calibrate_api.py").write_text(
+                "from pathlib import Path\nimport sys\n"
+                "with Path('fake_calls.txt').open('a') as log: log.write('calibrate\\n')\n"
+                "sys.exit(1)\n", encoding="ascii")
+            (project / "run_experiment.py").write_text(
+                "raise RuntimeError('discovery must not start')\n", encoding="ascii")
+            script = (project / "run.ps1").read_text(encoding="utf-8-sig")
+            script = script.replace(
+                "$venvPython = Join-Path $project '.venv\\Scripts\\python.exe'",
+                "$venvPython = $env:TN_PYTHON")
+            (project / "run.ps1").write_text(script, encoding="utf-8")
+            from tnlab import freeze
+            with patch.object(freeze, "ROOT", project):
+                source_hash = freeze.image_source_hash()
+            (project / "docker.cmd").write_text(
+                "@echo off\n"
+                'echo [{"Config":{"Labels":{"org.tnlab.source-sha256":"'
+                + source_hash + '"}}}]\n', encoding="ascii")
+            from hashlib import sha256
+            with patch.object(freeze, "ROOT", project):
+                hashes = freeze.frozen_file_hashes()
+            results = project / "results"
+            results.mkdir()
+            registration = project / "notes" / "formal_registration_2026-10.md"
+            manifest = {
+                "research_id": "tensor-path-discovery-2026-10",
+                "registration_sha256": sha256(registration.read_bytes()).hexdigest(),
+                "frozen_source_hashes": hashes,
+                "frozen_source_hashes_sha256": sha256(json.dumps(
+                    hashes, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
+                "run_ids": [f"run-{index}" for index in range(5)],
+                "model": None,
+                "calibration_run_id": "calibration-test",
+                "calibration_status": "pending",
+                "calibration_directory": str(results / "calibration"),
+                "runs": [{"run_id": f"run-{index}", "status": "pending"}
+                         for index in range(5)],
+            }
+            (results / "discovery_run_manifest.json").write_text(
+                json.dumps(manifest), encoding="utf-8")
+            environment = os.environ.copy()
+            environment.update({
+                "TN_PYTHON": str(ROOT / ".venv" / "Scripts" / "python.exe"),
+                "OPENAI_API_KEY": "offline-test-only",
+                "PYTHONPATH": str(Path(directory) / "openevolve"),
+                "PATH": str(project) + os.pathsep + environment.get("PATH", ""),
+            })
+            def launch(*args):
+                return subprocess.run(
+                    [powershell, "-NoProfile", "-NonInteractive", "-File",
+                     str(project / "run.ps1"), *args],
+                    cwd=project, env=environment, capture_output=True, text=True,
+                    encoding="utf-8", errors="replace", timeout=120)
+            first = launch("-ResumeDiscovery")
+            self.assertNotEqual(first.returncode, 0)
+            self.assertIn("Machine-checkable calibration failed", first.stderr)
+            self.assertNotIn("ExceptionWhenSetting", first.stderr)
+            manifest = json.loads((project / "results" / "discovery_run_manifest.json")
+                                  .read_text(encoding="utf-8-sig"))
+            self.assertEqual(manifest["calibration_status"], "failed")
+            self.assertIn("Machine-checkable calibration failed", manifest["calibration_error"])
+            self.assertEqual(len(set(manifest["run_ids"])), 5)
+            self.assertEqual([item["status"] for item in manifest["runs"]], ["pending"] * 5)
+            self.assertEqual((project / "fake_calls.txt").read_text(encoding="ascii"),
+                             "probe\ncalibrate\n")
+            second = launch("-ResumeDiscovery")
+            self.assertNotEqual(second.returncode, 0)
+            self.assertIn("preregistered one-shot rule", second.stderr)
+            self.assertEqual((project / "fake_calls.txt").read_text(encoding="ascii"),
+                             "probe\ncalibrate\n")
+            import sqlite3
+            from contextlib import closing
+            with closing(sqlite3.connect(
+                    project / "results" / "model_request_budget_100.sqlite3")) as db:
+                self.assertEqual(db.execute("SELECT COUNT(*) FROM requests").fetchone()[0], 0)
+
     def test_previous_run_summary_is_attached_as_audit_artifact(self):
         from run_experiment import attach_previous_run_summary
         from tempfile import TemporaryDirectory

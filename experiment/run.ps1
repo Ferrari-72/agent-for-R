@@ -113,6 +113,7 @@ else {
         model = $null
         calibration_run_id = ('calibration-' + [guid]::NewGuid().ToString())
         calibration_status = 'pending'
+        calibration_error = $null
         calibration_directory = (Join-Path $project ('results\calibration_' + [guid]::NewGuid().ToString()))
         runs = @(
             [ordered]@{run_id = $discoveryRunIds[0]; status = 'pending'},
@@ -206,10 +207,21 @@ try {
             ($runManifest | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $runManifestPath -Encoding UTF8
         }
         catch {
-            $runManifest.calibration_status = 'failed'
-            $runManifest.calibration_error = $_.Exception.Message
-            ($runManifest | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $runManifestPath -Encoding UTF8
-            throw
+            $calibrationFailure = $_
+            try {
+                $runManifest.calibration_status = 'failed'
+                if ($runManifest -is [System.Collections.IDictionary]) {
+                    $runManifest['calibration_error'] = $calibrationFailure.Exception.Message
+                }
+                else {
+                    $runManifest | Add-Member -NotePropertyName calibration_error -NotePropertyValue $calibrationFailure.Exception.Message -Force
+                }
+                ($runManifest | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $runManifestPath -Encoding UTF8
+            }
+            catch {
+                Write-Warning "Could not save calibration failure in discovery manifest: $($_.Exception.Message)"
+            }
+            throw $calibrationFailure
         }
     }
     else {
