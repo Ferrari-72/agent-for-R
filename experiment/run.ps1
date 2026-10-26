@@ -15,6 +15,19 @@ New-Item -ItemType Directory -Path (Join-Path $project 'results') -Force | Out-N
 $env:OPENEVOLVE_REQUEST_BUDGET_DB = Join-Path $project 'results\model_request_budget_100.sqlite3'
 $registration = Join-Path $project 'notes\formal_registration_2026-10.md'
 $venvPython = Join-Path $project '.venv\Scripts\python.exe'
+function Get-RequestUsageTotal {
+    param([string]$RunId)
+    if ($PSBoundParameters.ContainsKey('RunId')) {
+        $usageJson = & $venvPython -c 'import json,sys; from openevolve.utils.request_budget import request_usage; print(json.dumps(request_usage(run_id=sys.argv[1])))' $RunId
+    }
+    else {
+        $usageJson = & $venvPython -c 'import json; from openevolve.utils.request_budget import request_usage; print(json.dumps(request_usage()))'
+    }
+    if ($LASTEXITCODE -ne 0) { throw 'Could not read model request usage' }
+    $usage = $usageJson | ConvertFrom-Json
+    if ($null -eq $usage.total) { throw 'Model request usage is missing total' }
+    return [int]$usage.total
+}
 $framework = Join-Path (Split-Path -Parent $project) 'openevolve'
 if (-not (Test-Path -LiteralPath (Join-Path $framework 'pyproject.toml'))) {
     throw "Vendored OpenEvolve source is missing: $framework"
@@ -151,10 +164,9 @@ try {
         $reportPath = Join-Path $resumePath 'development_report.json'
         if (Test-Path -LiteralPath $reportPath) { throw 'Completed run cannot be resumed' }
         $env:TN_RUN_REQUEST_START_ID = '0'
-        $requestState = (& $venvPython -c "from openevolve.utils.request_budget import request_usage; import os; total=request_usage()['total']; own=request_usage(run_id=os.environ['TN_RUN_ID'])['total']; print(f'{total-own},{total}')").Trim()
-        if ($LASTEXITCODE -ne 0) { throw 'Could not read resumed run request attribution' }
-        $requestCounts = $requestState.Split(',')
-        $env:TN_RUN_REQUEST_COUNT_BEFORE = $requestCounts[0]
+        $totalRequests = Get-RequestUsageTotal
+        $runRequests = Get-RequestUsageTotal -RunId $env:TN_RUN_ID
+        $env:TN_RUN_REQUEST_COUNT_BEFORE = [string]($totalRequests - $runRequests)
         $env:TN_MODEL = 'deepseek-ai/DeepSeek-V3.2'
         & $venvPython run_experiment.py --iterations $Iterations --resume-run $resumePath
         if ($LASTEXITCODE -ne 0) { throw 'Experiment resume failed' }
@@ -177,8 +189,7 @@ try {
         $env:TN_EXECUTION_MODE = 'container'
         $env:TN_RUN_REQUEST_START_ID = (& $venvPython -c 'from openevolve.utils.request_budget import request_last_id; print(request_last_id())').Trim()
         if ($LASTEXITCODE -ne 0) { throw 'Could not read model request budget position' }
-        $env:TN_RUN_REQUEST_COUNT_BEFORE = (& $venvPython -c 'from openevolve.utils.request_budget import request_usage; print(request_usage()["total"])').Trim()
-        if ($LASTEXITCODE -ne 0) { throw 'Could not read cumulative model request count' }
+        $env:TN_RUN_REQUEST_COUNT_BEFORE = [string](Get-RequestUsageTotal)
         $runManifest.calibration_status = 'requesting'
         ($runManifest | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $runManifestPath -Encoding UTF8
         try {
@@ -248,8 +259,7 @@ try {
         }
         $env:TN_RUN_REQUEST_START_ID = (& $venvPython -c 'from openevolve.utils.request_budget import request_last_id; print(request_last_id())').Trim()
         if ($LASTEXITCODE -ne 0) { throw 'Could not read model request budget position' }
-        $env:TN_RUN_REQUEST_COUNT_BEFORE = (& $venvPython -c 'from openevolve.utils.request_budget import request_usage; print(request_usage()["total"])').Trim()
-        if ($LASTEXITCODE -ne 0) { throw 'Could not read cumulative model request count' }
+        $env:TN_RUN_REQUEST_COUNT_BEFORE = [string](Get-RequestUsageTotal)
         $runManifest.runs[$runIndex - 1].status = 'running'
         ($runManifest | ConvertTo-Json -Depth 6) | Set-Content -LiteralPath $runManifestPath -Encoding UTF8
         Write-Host "Starting discovery run $runIndex/5 ($env:TN_RUN_ID)"

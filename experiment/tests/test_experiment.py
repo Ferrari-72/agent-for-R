@@ -637,8 +637,11 @@ class CandidateTests(unittest.TestCase):
         fake.models.list.return_value.data = [MagicMock(id="deepseek-ai/DeepSeek-V3.2")]
         fake.chat.completions.create.return_value.choices = [MagicMock()]
         output = io.StringIO()
-        with patch.dict(os.environ, {"OPENAI_API_KEY": "local-test"}), \
-             patch.object(probe_api, "OpenAI", return_value=fake), \
+        with patch.dict(os.environ, {
+            "OPENAI_API_KEY": "local-test",
+            "OPENEVOLVE_REQUEST_BUDGET_DB": "",
+            "TN_EXECUTION_MODE": "",
+        }), patch.object(probe_api, "OpenAI", return_value=fake), \
              redirect_stdout(output), redirect_stderr(io.StringIO()):
             probe_api.main()
         self.assertEqual(output.getvalue().strip(), "deepseek-ai/DeepSeek-V3.2")
@@ -965,6 +968,9 @@ class CandidateTests(unittest.TestCase):
         self.assertIn("Calibration was interrupted after request processing began", script)
         self.assertIn("frozen_source_hashes_sha256", script)
         self.assertIn("Assert-FrozenSources", script)
+        self.assertEqual(script.count("Get-RequestUsageTotal -RunId"), 1)
+        self.assertEqual(script.count("[string](Get-RequestUsageTotal)"), 2)
+        self.assertNotIn('request_usage()["total"]', script)
 
         powershell = next((candidate for candidate in (
             "powershell.exe", "pwsh.exe",
@@ -1099,6 +1105,112 @@ class CandidateTests(unittest.TestCase):
             self.assertEqual(summary["recent_iterations"][0]["failure"]["error_code"],
                              "path_semantics")
             self.assertIn("never appended", summary["prompt_policy"])
+
+    def test_powershell_request_usage_handles_total_and_run_id(self):
+        powershell = next((candidate for candidate in (
+            "powershell.exe", "pwsh.exe",
+            r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",
+        ) if shutil.which(candidate) or Path(candidate).is_file()), None)
+        if powershell is None:
+            self.skipTest("Windows PowerShell is unavailable")
+        from openevolve.utils.request_budget import initialize_request_budget, reserve_request
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            ledger = Path(directory) / "request_budget.sqlite3"
+            initialize_request_budget(ledger, "offline-test", 100)
+            with patch.dict(os.environ, {"OPENEVOLVE_REQUEST_BUDGET_DB": str(ledger)}):
+                reserve_request("test", run_id="run-a")
+                reserve_request("test", run_id="run-a")
+                reserve_request("test", run_id="run-b")
+            script = (ROOT / "run.ps1").read_text(encoding="utf-8-sig")
+            helper = "function Get-RequestUsageTotal {" + script.split(
+                "function Get-RequestUsageTotal {", 1)[1].split("$framework =", 1)[0]
+            python_path = str(ROOT / ".venv" / "Scripts" / "python.exe")
+            command = ("$venvPython = '" + python_path.replace("'", "''") + "'; "
+                       + helper + "; Get-RequestUsageTotal; "
+                       + "Get-RequestUsageTotal -RunId 'run-a'")
+            environment = os.environ.copy()
+            environment["OPENEVOLVE_REQUEST_BUDGET_DB"] = str(ledger)
+            environment["PYTHONPATH"] = str(ROOT.parent / "openevolve")
+            completed = subprocess.run(
+                [powershell, "-NoProfile", "-NonInteractive", "-Command", command],
+                cwd=ROOT, env=environment, capture_output=True, text=True,
+                encoding="utf-8", errors="replace", timeout=60)
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertEqual(completed.stdout.split(), ["3", "2"])
+
+    def test_powershell_orchestration_counts_each_run_and_resume(self):
+        powershell = next((candidate for candidate in (
+            "powershell.exe", "pwsh.exe",
+            r"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe",
+        ) if shutil.which(candidate) or Path(candidate).is_file()), None)
+        if powershell is None:
+            self.skipTest("Windows PowerShell is unavailable")
+        with tempfile.TemporaryDirectory(dir=ROOT) as directory:
+            project = Path(directory) / "experiment"
+            shutil.copytree(ROOT, project, ignore=shutil.ignore_patterns(
+                ".venv", "results", "tests", "__pycache__", "tmp*"))
+            shutil.copytree(ROOT.parent / "openevolve", Path(directory) / "openevolve")
+            (project / "tests").mkdir()
+            (project / "tests" / "test_smoke.py").write_text(
+                "import unittest\nclass SmokeTest(unittest.TestCase):\n"
+                "    def test_smoke(self): self.assertTrue(True)\n", encoding="ascii")
+            (project / "probe_api.py").write_text(
+                "print('deepseek-ai/DeepSeek-V3.2')\n", encoding="ascii")
+            (project / "calibrate_api.py").write_text("pass\n", encoding="ascii")
+            (project / "select_discovery.py").write_text("pass\n", encoding="ascii")
+            (project / "run_experiment.py").write_text(
+                "import json, os, sys\nfrom pathlib import Path\n"
+                "from openevolve.utils.request_budget import reserve_request\n"
+                "run_id = os.environ['TN_RUN_ID']\n"
+                "run = Path('results') / ('evolve_' + run_id)\nrun.mkdir(exist_ok=True)\n"
+                "(run / 'run_id.txt').write_text(run_id, encoding='utf-8')\n"
+                "with Path('counts.jsonl').open('a', encoding='utf-8') as out:\n"
+                "    out.write(json.dumps({'run_id': run_id, "
+                "'before': int(os.environ['TN_RUN_REQUEST_COUNT_BEFORE']), "
+                "'resume': '--resume-run' in sys.argv}) + '\\n')\n"
+                "if '--resume-run' not in sys.argv: reserve_request('chat_completion')\n"
+                "(run / 'development_report.json').write_text('{}', encoding='utf-8')\n",
+                encoding="ascii")
+            script = (project / "run.ps1").read_text(encoding="utf-8-sig")
+            script = script.replace(
+                "$venvPython = Join-Path $project '.venv\\Scripts\\python.exe'",
+                "$venvPython = $env:TN_PYTHON")
+            (project / "run.ps1").write_text(script, encoding="utf-8")
+            from tnlab import freeze
+            with patch.object(freeze, "ROOT", project):
+                source_hash = freeze.image_source_hash()
+            (project / "docker.cmd").write_text(
+                "@echo off\n"
+                'echo [{"Config":{"Labels":{"org.tnlab.source-sha256":"'
+                + source_hash + '"}}}]\n', encoding="ascii")
+            environment = os.environ.copy()
+            environment.update({
+                "TN_PYTHON": str(ROOT / ".venv" / "Scripts" / "python.exe"),
+                "OPENAI_API_KEY": "offline-test-only",
+                "PYTHONPATH": str(Path(directory) / "openevolve"),
+                "PATH": str(project) + os.pathsep + environment.get("PATH", ""),
+            })
+            def launch(*args):
+                return subprocess.run(
+                    [powershell, "-NoProfile", "-NonInteractive", "-File",
+                     str(project / "run.ps1"), *args],
+                    cwd=project, env=environment, capture_output=True, text=True,
+                    encoding="utf-8", errors="replace", timeout=120)
+            completed = launch()
+            self.assertEqual(completed.returncode, 0,
+                             (completed.stdout or "") + (completed.stderr or ""))
+            counts = [json.loads(line) for line in (project / "counts.jsonl").read_text(
+                encoding="utf-8").splitlines()]
+            self.assertEqual([row["before"] for row in counts], list(range(5)))
+            self.assertEqual(len({row["run_id"] for row in counts}), 5)
+            run = project / "results" / ("evolve_" + counts[0]["run_id"])
+            (run / "development_report.json").unlink()
+            resumed = launch("-ResumeRun", str(run))
+            self.assertEqual(resumed.returncode, 0,
+                             (resumed.stdout or "") + (resumed.stderr or ""))
+            last = json.loads((project / "counts.jsonl").read_text(
+                encoding="utf-8").splitlines()[-1])
+            self.assertEqual((last["before"], last["resume"]), (4, True))
 
     def test_previous_run_summary_is_attached_as_audit_artifact(self):
         from run_experiment import attach_previous_run_summary
