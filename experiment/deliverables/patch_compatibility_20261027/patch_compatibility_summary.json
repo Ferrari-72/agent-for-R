@@ -1,0 +1,2913 @@
+{
+  "checks": [
+    {
+      "detail": {
+        "case_count": 14,
+        "response_characters": 204,
+        "response_utf8_bytes": 204
+      },
+      "name": "partition/local_decision",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "case_count": 14,
+        "response_characters": 5015,
+        "response_utf8_bytes": 5015
+      },
+      "name": "partition/replace_search_function",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "case_count": 14,
+        "response_characters": 18368,
+        "response_utf8_bytes": 18368
+      },
+      "name": "partition/replace_entire_region",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "partition/reject/prose",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "partition/reject/fence",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "partition/reject/two_blocks",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "partition/reject/unmatched_search",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "partition/reject/ambiguous_search",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "partition/reject/outside_region",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "partition/reject/no_op",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "partition/reject/signature",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "SyntaxError"
+      },
+      "name": "partition/reject/syntax",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "partition/reject/truncated",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "case_count": 14,
+        "response_characters": 170,
+        "response_utf8_bytes": 170
+      },
+      "name": "tree/local_decision",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "case_count": 14,
+        "response_characters": 2743,
+        "response_utf8_bytes": 2743
+      },
+      "name": "tree/replace_search_function",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "case_count": 14,
+        "response_characters": 17489,
+        "response_utf8_bytes": 17489
+      },
+      "name": "tree/replace_entire_region",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "tree/reject/prose",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "tree/reject/fence",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "tree/reject/two_blocks",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "tree/reject/unmatched_search",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "tree/reject/ambiguous_search",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "tree/reject/outside_region",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "tree/reject/no_op",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "tree/reject/signature",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "SyntaxError"
+      },
+      "name": "tree/reject/syntax",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "tree/reject/truncated",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "case_count": 14,
+        "response_characters": 178,
+        "response_utf8_bytes": 178
+      },
+      "name": "beam/local_decision",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "case_count": 14,
+        "response_characters": 4136,
+        "response_utf8_bytes": 4136
+      },
+      "name": "beam/replace_search_function",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "case_count": 14,
+        "response_characters": 19761,
+        "response_utf8_bytes": 19761
+      },
+      "name": "beam/replace_entire_region",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "beam/reject/prose",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "beam/reject/fence",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "beam/reject/two_blocks",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "beam/reject/unmatched_search",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "beam/reject/ambiguous_search",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "beam/reject/outside_region",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "beam/reject/no_op",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "beam/reject/signature",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "SyntaxError"
+      },
+      "name": "beam/reject/syntax",
+      "status": "passed"
+    },
+    {
+      "detail": {
+        "exception": "ValueError"
+      },
+      "name": "beam/reject/truncated",
+      "status": "passed"
+    }
+  ],
+  "checks_passed": 39,
+  "checks_total": 39,
+  "errors": [],
+  "examples": [
+    {
+      "case_count": 14,
+      "child_sha256": "0743a190e04dffde88026f66ed1d2a6ef5a86aaa38090da803050fe57caabcad",
+      "kind": "local_decision",
+      "paths": [
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            4
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "response": "<<<<<<< SEARCH\n            return cut + abs(left.bit_count() - right.bit_count()) / len(leaves)\n=======\n            return cut + 2 * abs(left.bit_count() - right.bit_count()) / len(leaves)\n>>>>>>> REPLACE",
+      "response_characters": 204,
+      "response_lines": 5,
+      "response_sha256": "70fb9c116a2f997187c00588dc70b7ee34b32b38d391a6faab6b093f9d14799f",
+      "response_utf8_bytes": 204,
+      "route": "partition",
+      "scores": [
+        {
+          "cost": 24,
+          "peak_elements": 12
+        },
+        {
+          "cost": 2,
+          "peak_elements": 2
+        },
+        {
+          "cost": 1,
+          "peak_elements": 1
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 48,
+          "peak_elements": 36
+        },
+        {
+          "cost": 48,
+          "peak_elements": 12
+        },
+        {
+          "cost": 60,
+          "peak_elements": 6
+        },
+        {
+          "cost": 54,
+          "peak_elements": 6
+        },
+        {
+          "cost": 258,
+          "peak_elements": 216
+        },
+        {
+          "cost": 63,
+          "peak_elements": 36
+        },
+        {
+          "cost": 4,
+          "peak_elements": 3
+        },
+        {
+          "cost": 9,
+          "peak_elements": 6
+        },
+        {
+          "cost": 132,
+          "peak_elements": 18
+        }
+      ]
+    },
+    {
+      "case_count": 14,
+      "child_sha256": "b4787b60b6b22a28c920bc3b9320bb97b80e2cf6afa54944a1d3cd81d667734e",
+      "kind": "replace_search_function",
+      "paths": [
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            2,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "response": "<<<<<<< SEARCH\ndef recursive_hypergraph_partition(inputs, output, sizes, *, seed=0, cutoff=4,\n                                    refinement_sweeps=4, partition_trials=2,\n                                    peak_limit=None):\n    \"\"\"Balanced dimension-weighted hyperedge cuts; exact tiny-subtree search.\n\n    Each hyperedge contributes its weight once to a cut, regardless of arity.\n    This is a small editable partition heuristic, not a KaHyPar implementation.\n    \"\"\"\n    problem = Problem(inputs, output, sizes)\n    _integer(seed, \"seed\", 0, 2**64 - 1)\n    _integer(cutoff, \"cutoff\", 2, 6)\n    _integer(refinement_sweeps, \"refinement_sweeps\", 0, 16)\n    _integer(partition_trials, \"partition_trials\", 1, 8)\n    peak_limit = _peak_limit(peak_limit)\n    rng = random.Random(seed)\n    exact = {}\n\n    def small(group):\n        if group in exact:\n            return exact[group]\n        if group.bit_count() == 1:\n            answer = [(group.bit_length() - 1, 0,\n                       problem.volume(problem.inputs[group.bit_length() - 1]))]\n        else:\n            first = group & -group\n            answer = []\n            left = (group - 1) & group\n            while left:\n                right = group ^ left\n                if right and left & first:\n                    cost, size = problem.join(left, right)\n                    for a, ca, pa in small(left):\n                        for b, cb, pb in small(right):\n                            candidate = ((a, b), ca + cb + cost, max(pa, pb, size))\n                            if any(old[1] <= candidate[1] and old[2] <= candidate[2]\n                                   for old in answer):\n                                continue\n                            answer[:] = [old for old in answer\n                                         if not (candidate[1] <= old[1] and candidate[2] <= old[2])]\n                            answer.append(candidate)\n                left = (left - 1) & group\n        exact[group] = answer\n        return answer\n\n    def recurse(group):\n        if group.bit_count() <= cutoff:\n            return min(small(group), key=lambda item: _rank(*item[1:], peak_limit))[0]\n        leaves = [i for i in range(problem.n) if group & (1 << i)]\n        minimum = max(1, len(leaves) // 4)\n\n        def objective(left):\n            right = group ^ left\n            cut = sum(weight for incidence, weight in zip(problem.incidence, problem.weights)\n                      if incidence & left and incidence & right)\n            return cut + abs(left.bit_count() - right.bit_count()) / len(leaves)\n\n        best = None\n        for trial_index in range(partition_trials):\n            order = leaves.copy()\n            rng.shuffle(order)\n            if trial_index == 0:\n                # A connected traversal avoids starting every cut as scattered\n                # random islands. The remaining trials retain random starts.\n                pending = set(leaves)\n                traversal = []\n                for start in order:\n                    if start not in pending:\n                        continue\n                    queue = [start]\n                    pending.remove(start)\n                    for node in queue:\n                        traversal.append(node)\n                        neighbors = 0\n                        for incidence in problem.incidence:\n                            if incidence & (1 << node):\n                                neighbors |= incidence & group\n                        for neighbor in order:\n                            if neighbor in pending and neighbors & (1 << neighbor):\n                                pending.remove(neighbor)\n                                queue.append(neighbor)\n                order = traversal\n            left = sum(1 << i for i in order[:len(leaves) // 2])\n            score = objective(left)\n            for _ in range(refinement_sweeps):\n                rng.shuffle(order)\n                changed = False\n                for node in order:\n                    proposed = left ^ (1 << node)\n                    if not minimum <= proposed.bit_count() <= len(leaves) - minimum:\n                        continue\n                    trial = objective(proposed)\n                    if trial < score:\n                        left, score, changed = proposed, trial, True\n                if not changed:\n                    break\n            # Normalize side identity so ties are deterministic.\n            left = min(left, group ^ left)\n            candidate = (objective(left), left)\n            if best is None or candidate < best:\n                best = candidate\n        left = best[1]\n        return recurse(left), recurse(group ^ left)\n\n    return tree_to_path(recurse(problem.full), problem.n)\n=======\ndef recursive_hypergraph_partition(inputs, output, sizes, *, seed=0):\n    problem = Problem(inputs, output, sizes)\n    _integer(seed, 'seed', 0, 2**64 - 1)\n    leaves = tuple(reversed(range(problem.n)))\n    return tree_to_path(_balanced(leaves), problem.n)\n>>>>>>> REPLACE",
+      "response_characters": 5015,
+      "response_lines": 112,
+      "response_sha256": "5c2cebd14269210aac45f8fcdaaabbce683e5dd4915cedd8d3265b205653f422",
+      "response_utf8_bytes": 5015,
+      "route": "partition",
+      "scores": [
+        {
+          "cost": 24,
+          "peak_elements": 12
+        },
+        {
+          "cost": 2,
+          "peak_elements": 2
+        },
+        {
+          "cost": 1,
+          "peak_elements": 1
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 54,
+          "peak_elements": 36
+        },
+        {
+          "cost": 54,
+          "peak_elements": 18
+        },
+        {
+          "cost": 72,
+          "peak_elements": 9
+        },
+        {
+          "cost": 66,
+          "peak_elements": 9
+        },
+        {
+          "cost": 378,
+          "peak_elements": 216
+        },
+        {
+          "cost": 114,
+          "peak_elements": 36
+        },
+        {
+          "cost": 4,
+          "peak_elements": 3
+        },
+        {
+          "cost": 15,
+          "peak_elements": 6
+        },
+        {
+          "cost": 150,
+          "peak_elements": 18
+        }
+      ]
+    },
+    {
+      "case_count": 14,
+      "child_sha256": "bf26da5faa7faca4ed439004037d5e76ee4735d2e1d6d62e624b1d32792f8081",
+      "kind": "replace_entire_region",
+      "paths": [
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            5
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "response": "<<<<<<< SEARCH\n\"\"\"Editable path-search prototypes; standard library only, no solver wrappers.\n\nThe three search policies are deliberately separate. Shared helpers implement\noriginal-leaf identity, hyperedge boundaries and dynamic-position path encoding.\nWork limits are engineering defaults, not measured performance recommendations.\n\"\"\"\n\n\nfrom __future__ import annotations\n\n\nimport math\n\n\nimport random\n\n\nMAX_TENSORS = 256\n\n\nMAX_CACHED_GROUPS = 20000\n\n\ndef _integer(value, name, low, high):\n    if type(value) is not int or not low <= value <= high:\n        raise ValueError(f\"{name} must be an integer in [{low}, {high}]\")\n    return value\n\n\nclass Problem:\n    \"\"\"Represent original leaves and labels by separate integer bit masks.\"\"\"\n\n    def __init__(self, inputs, output, sizes):\n        terms = tuple(tuple(term) for term in inputs)\n        output = tuple(output)\n        _integer(len(terms), \"tensor count\", 2, MAX_TENSORS)\n        if any(any(type(x) is not str for x in term) or len(set(term)) != len(term)\n               for term in terms):\n            raise ValueError(\"inputs require unique string labels; traces unsupported\")\n        if any(type(x) is not str for x in output) or len(set(output)) != len(output):\n            raise ValueError(\"output requires unique string labels\")\n        labels = sorted(set().union(*map(set, terms)))\n        if set(sizes) != set(labels) or not set(output) <= set(labels):\n            raise ValueError(\"sizes and output must match input labels\")\n        for value in sizes.values():\n            _integer(value, \"dimension\", 1, 2**64 - 1)\n        self.n = len(terms)\n        self.full = (1 << self.n) - 1\n        self.dimensions = tuple(sizes[x] for x in labels)\n        index = {label: i for i, label in enumerate(labels)}\n        self.inputs = tuple(sum(1 << index[x] for x in term) for term in terms)\n        self.output = sum(1 << index[x] for x in output)\n        self.incidence = tuple(sum(1 << leaf for leaf, term in enumerate(terms) if x in term)\n                               for x in labels)\n        self.weights = tuple(math.log2(d) for d in self.dimensions)\n        # cotengra 0.8.3 excludes single-input reductions from binary-tree cost.\n        # Keep raw input sizes for the peak, but use effective boundary legs.\n        self._legs = {}\n        self._volumes = {0: 1}\n        self.input_peak = max(self.volume(term) for term in self.inputs)\n\n    def volume(self, labels):\n        cached = self._volumes.get(labels)\n        if cached is not None:\n            return cached\n        value = 1\n        todo = labels\n        while todo:\n            bit = todo & -todo\n            value *= self.dimensions[bit.bit_length() - 1]\n            todo ^= bit\n        if len(self._volumes) < MAX_CACHED_GROUPS:\n            self._volumes[labels] = value\n        return value\n\n    def legs(self, group):\n        cached = self._legs.get(group)\n        if cached is not None:\n            return cached\n        # Effective legs retain a label iff needed by output or outside it.\n        # Unary local sums are excluded from cotengra's binary-tree FLOPs.\n        outside = self.full ^ group\n        result = 0\n        for i, incidence in enumerate(self.incidence):\n            if incidence & group and (incidence & outside or self.output & (1 << i)):\n                result |= 1 << i\n        if len(self._legs) < MAX_CACHED_GROUPS:\n            self._legs[group] = result\n        return result\n\n    def join(self, left, right):\n        return (self.volume(self.legs(left) | self.legs(right)),\n                self.volume(self.legs(left | right)))\n\n    def tree_stats(self, tree):\n        def visit(node):\n            if type(node) is int:\n                return 1 << node, 0, self.volume(self.inputs[node])\n            left, a, pa = visit(node[0])\n            right, b, pb = visit(node[1])\n            cost, size = self.join(left, right)\n            return left | right, a + b + cost, max(pa, pb, size)\n        group, cost, peak = visit(tree)\n        if group != self.full:\n            raise ValueError(\"tree must cover every original input\")\n        return cost, peak\n\n\ndef tree_to_path(tree, n):\n    \"\"\"Postorder original-leaf tree -> current operand positions, append result.\"\"\"\n    active = [1 << i for i in range(n)]\n    path = []\n    seen = set()\n\n    def visit(node):\n        if type(node) is int:\n            if not 0 <= node < n or node in seen:\n                raise ValueError(\"invalid or repeated original leaf\")\n            seen.add(node)\n            return 1 << node\n        if type(node) is not tuple or len(node) != 2:\n            raise ValueError(\"binary tree required\")\n        left, right = visit(node[0]), visit(node[1])\n        i, j = active.index(left), active.index(right)\n        path.append((min(i, j), max(i, j)))\n        for index in sorted((i, j), reverse=True):\n            active.pop(index)\n        active.append(left | right)\n        return left | right\n\n    visit(tree)\n    if len(seen) != n or len(path) != n - 1:\n        raise ValueError(\"incomplete tree\")\n    return path\n\n\ndef _balanced(leaves):\n    if len(leaves) == 1:\n        return leaves[0]\n    midpoint = len(leaves) // 2\n    return _balanced(leaves[:midpoint]), _balanced(leaves[midpoint:])\n\n\ndef _rank(cost, peak, peak_limit):\n    return (max(0, peak - peak_limit) if peak_limit is not None else 0, cost, peak)\n\n\ndef _peak_limit(value):\n    if value is not None:\n        _integer(value, \"peak_limit\", 1, 2**63 - 1)\n    return value\n\n\ndef recursive_hypergraph_partition(inputs, output, sizes, *, seed=0, cutoff=4,\n                                    refinement_sweeps=4, partition_trials=2,\n                                    peak_limit=None):\n    \"\"\"Balanced dimension-weighted hyperedge cuts; exact tiny-subtree search.\n\n    Each hyperedge contributes its weight once to a cut, regardless of arity.\n    This is a small editable partition heuristic, not a KaHyPar implementation.\n    \"\"\"\n    problem = Problem(inputs, output, sizes)\n    _integer(seed, \"seed\", 0, 2**64 - 1)\n    _integer(cutoff, \"cutoff\", 2, 6)\n    _integer(refinement_sweeps, \"refinement_sweeps\", 0, 16)\n    _integer(partition_trials, \"partition_trials\", 1, 8)\n    peak_limit = _peak_limit(peak_limit)\n    rng = random.Random(seed)\n    exact = {}\n\n    def small(group):\n        if group in exact:\n            return exact[group]\n        if group.bit_count() == 1:\n            answer = [(group.bit_length() - 1, 0,\n                       problem.volume(problem.inputs[group.bit_length() - 1]))]\n        else:\n            first = group & -group\n            answer = []\n            left = (group - 1) & group\n            while left:\n                right = group ^ left\n                if right and left & first:\n                    cost, size = problem.join(left, right)\n                    for a, ca, pa in small(left):\n                        for b, cb, pb in small(right):\n                            candidate = ((a, b), ca + cb + cost, max(pa, pb, size))\n                            if any(old[1] <= candidate[1] and old[2] <= candidate[2]\n                                   for old in answer):\n                                continue\n                            answer[:] = [old for old in answer\n                                         if not (candidate[1] <= old[1] and candidate[2] <= old[2])]\n                            answer.append(candidate)\n                left = (left - 1) & group\n        exact[group] = answer\n        return answer\n\n    def recurse(group):\n        if group.bit_count() <= cutoff:\n            return min(small(group), key=lambda item: _rank(*item[1:], peak_limit))[0]\n        leaves = [i for i in range(problem.n) if group & (1 << i)]\n        minimum = max(1, len(leaves) // 4)\n\n        def objective(left):\n            right = group ^ left\n            cut = sum(weight for incidence, weight in zip(problem.incidence, problem.weights)\n                      if incidence & left and incidence & right)\n            return cut + abs(left.bit_count() - right.bit_count()) / len(leaves)\n\n        best = None\n        for trial_index in range(partition_trials):\n            order = leaves.copy()\n            rng.shuffle(order)\n            if trial_index == 0:\n                # A connected traversal avoids starting every cut as scattered\n                # random islands. The remaining trials retain random starts.\n                pending = set(leaves)\n                traversal = []\n                for start in order:\n                    if start not in pending:\n                        continue\n                    queue = [start]\n                    pending.remove(start)\n                    for node in queue:\n                        traversal.append(node)\n                        neighbors = 0\n                        for incidence in problem.incidence:\n                            if incidence & (1 << node):\n                                neighbors |= incidence & group\n                        for neighbor in order:\n                            if neighbor in pending and neighbors & (1 << neighbor):\n                                pending.remove(neighbor)\n                                queue.append(neighbor)\n                order = traversal\n            left = sum(1 << i for i in order[:len(leaves) // 2])\n            score = objective(left)\n            for _ in range(refinement_sweeps):\n                rng.shuffle(order)\n                changed = False\n                for node in order:\n                    proposed = left ^ (1 << node)\n                    if not minimum <= proposed.bit_count() <= len(leaves) - minimum:\n                        continue\n                    trial = objective(proposed)\n                    if trial < score:\n                        left, score, changed = proposed, trial, True\n                if not changed:\n                    break\n            # Normalize side identity so ties are deterministic.\n            left = min(left, group ^ left)\n            candidate = (objective(left), left)\n            if best is None or candidate < best:\n                best = candidate\n        left = best[1]\n        return recurse(left), recurse(group ^ left)\n\n    return tree_to_path(recurse(problem.full), problem.n)\n\n\ndef find_path(inputs, output, sizes, seed=0):\n    return recursive_hypergraph_partition(inputs, output, sizes, seed=seed)\n=======\n\"\"\"Editable path-search prototypes; standard library only, no solver wrappers.\n\nThe three search policies are deliberately separate. Shared helpers implement\noriginal-leaf identity, hyperedge boundaries and dynamic-position path encoding.\nWork limits are engineering defaults, not measured performance recommendations.\n\"\"\"\n\n\nfrom __future__ import annotations\n\n\nimport math\n\n\nimport random\n\n\nMAX_TENSORS = 256\n\n\nMAX_CACHED_GROUPS = 20000\n\n\ndef _integer(value, name, low, high):\n    if type(value) is not int or not low <= value <= high:\n        raise ValueError(f\"{name} must be an integer in [{low}, {high}]\")\n    return value\n\n\nclass Problem:\n    \"\"\"Represent original leaves and labels by separate integer bit masks.\"\"\"\n\n    def __init__(self, inputs, output, sizes):\n        terms = tuple(tuple(term) for term in inputs)\n        output = tuple(output)\n        _integer(len(terms), \"tensor count\", 2, MAX_TENSORS)\n        if any(any(type(x) is not str for x in term) or len(set(term)) != len(term)\n               for term in terms):\n            raise ValueError(\"inputs require unique string labels; traces unsupported\")\n        if any(type(x) is not str for x in output) or len(set(output)) != len(output):\n            raise ValueError(\"output requires unique string labels\")\n        labels = sorted(set().union(*map(set, terms)))\n        if set(sizes) != set(labels) or not set(output) <= set(labels):\n            raise ValueError(\"sizes and output must match input labels\")\n        for value in sizes.values():\n            _integer(value, \"dimension\", 1, 2**64 - 1)\n        self.n = len(terms)\n        self.full = (1 << self.n) - 1\n        self.dimensions = tuple(sizes[x] for x in labels)\n        index = {label: i for i, label in enumerate(labels)}\n        self.inputs = tuple(sum(1 << index[x] for x in term) for term in terms)\n        self.output = sum(1 << index[x] for x in output)\n        self.incidence = tuple(sum(1 << leaf for leaf, term in enumerate(terms) if x in term)\n                               for x in labels)\n        self.weights = tuple(math.log2(d) for d in self.dimensions)\n        # cotengra 0.8.3 excludes single-input reductions from binary-tree cost.\n        # Keep raw input sizes for the peak, but use effective boundary legs.\n        self._legs = {}\n        self._volumes = {0: 1}\n        self.input_peak = max(self.volume(term) for term in self.inputs)\n\n    def volume(self, labels):\n        cached = self._volumes.get(labels)\n        if cached is not None:\n            return cached\n        value = 1\n        todo = labels\n        while todo:\n            bit = todo & -todo\n            value *= self.dimensions[bit.bit_length() - 1]\n            todo ^= bit\n        if len(self._volumes) < MAX_CACHED_GROUPS:\n            self._volumes[labels] = value\n        return value\n\n    def legs(self, group):\n        cached = self._legs.get(group)\n        if cached is not None:\n            return cached\n        # Effective legs retain a label iff needed by output or outside it.\n        # Unary local sums are excluded from cotengra's binary-tree FLOPs.\n        outside = self.full ^ group\n        result = 0\n        for i, incidence in enumerate(self.incidence):\n            if incidence & group and (incidence & outside or self.output & (1 << i)):\n                result |= 1 << i\n        if len(self._legs) < MAX_CACHED_GROUPS:\n            self._legs[group] = result\n        return result\n\n    def join(self, left, right):\n        return (self.volume(self.legs(left) | self.legs(right)),\n                self.volume(self.legs(left | right)))\n\n    def tree_stats(self, tree):\n        def visit(node):\n            if type(node) is int:\n                return 1 << node, 0, self.volume(self.inputs[node])\n            left, a, pa = visit(node[0])\n            right, b, pb = visit(node[1])\n            cost, size = self.join(left, right)\n            return left | right, a + b + cost, max(pa, pb, size)\n        group, cost, peak = visit(tree)\n        if group != self.full:\n            raise ValueError(\"tree must cover every original input\")\n        return cost, peak\n\n\ndef tree_to_path(tree, n):\n    \"\"\"Postorder original-leaf tree -> current operand positions, append result.\"\"\"\n    active = [1 << i for i in range(n)]\n    path = []\n    seen = set()\n\n    def visit(node):\n        if type(node) is int:\n            if not 0 <= node < n or node in seen:\n                raise ValueError(\"invalid or repeated original leaf\")\n            seen.add(node)\n            return 1 << node\n        if type(node) is not tuple or len(node) != 2:\n            raise ValueError(\"binary tree required\")\n        left, right = visit(node[0]), visit(node[1])\n        i, j = active.index(left), active.index(right)\n        path.append((min(i, j), max(i, j)))\n        for index in sorted((i, j), reverse=True):\n            active.pop(index)\n        active.append(left | right)\n        return left | right\n\n    visit(tree)\n    if len(seen) != n or len(path) != n - 1:\n        raise ValueError(\"incomplete tree\")\n    return path\n\n\ndef _balanced(leaves):\n    if len(leaves) == 1:\n        return leaves[0]\n    midpoint = len(leaves) // 2\n    return _balanced(leaves[:midpoint]), _balanced(leaves[midpoint:])\n\n\ndef _rank(cost, peak, peak_limit):\n    return (max(0, peak - peak_limit) if peak_limit is not None else 0, cost, peak)\n\n\ndef _peak_limit(value):\n    if value is not None:\n        _integer(value, \"peak_limit\", 1, 2**63 - 1)\n    return value\n\n\ndef tree_search_annealing(inputs, output, sizes, *, seed=0, steps=128,\n                          temperature=0.5, peak_limit=None):\n    \"\"\"Seeded binary reassociation rotations, log-cost acceptance, best retained.\"\"\"\n    problem = Problem(inputs, output, sizes)\n    _integer(seed, \"seed\", 0, 2**64 - 1)\n    _integer(steps, \"steps\", 0, 4096)\n    if type(temperature) not in (int, float) or not math.isfinite(temperature) or temperature <= 0:\n        raise ValueError(\"temperature must be positive and finite\")\n    peak_limit = _peak_limit(peak_limit)\n    rng = random.Random(seed)\n    current = best = _balanced(tuple(range(problem.n)))\n    current_stats = best_stats = problem.tree_stats(current)\n\n    def energy(stats):\n        cost, peak = stats\n        violation = max(0.0, math.log(peak) - math.log(peak_limit)) if peak_limit else 0.0\n        return math.log(cost + 1) + 8.0 * violation\n\n    for step in range(steps):\n        eligible = []\n\n        def collect(node, address=()):\n            if type(node) is int:\n                return\n            if type(node[0]) is tuple or type(node[1]) is tuple:\n                eligible.append((address, node))\n            collect(node[0], address + (0,))\n            collect(node[1], address + (1,))\n\n        collect(current)\n        if not eligible:\n            break\n        address, node = rng.choice(eligible)\n        left, right = node\n        proposals = []\n        if type(left) is tuple:\n            a, b = left\n            proposals.extend(((a, (b, right)), (b, (a, right))))\n        if type(right) is tuple:\n            a, b = right\n            proposals.extend((((left, a), b), ((left, b), a)))\n        replacement = rng.choice(proposals)\n\n        def replace(root, route):\n            if not route:\n                return replacement\n            side = route[0]\n            children = list(root)\n            children[side] = replace(children[side], route[1:])\n            return tuple(children)\n\n        candidate = replace(current, address)\n        stats = problem.tree_stats(candidate)\n        if _rank(*stats, peak_limit) < _rank(*best_stats, peak_limit):\n            best, best_stats = candidate, stats\n        delta = energy(stats) - energy(current_stats)\n        temp = temperature * (0.02 ** (step / max(1, steps - 1)))\n        if delta <= 0 or math.log(max(rng.random(), 1e-300)) < -delta / temp:\n            current, current_stats = candidate, stats\n    return tree_to_path(best, problem.n)\n\n\ndef find_path(inputs, output, sizes, seed=0):\n    return tree_search_annealing(inputs, output, sizes, seed=seed)\n>>>>>>> REPLACE",
+      "response_characters": 18368,
+      "response_lines": 481,
+      "response_sha256": "0b3583f9e8b319d6ff2441e7657a461d03b9f74735bcef41e02b3c7dedd19534",
+      "response_utf8_bytes": 18368,
+      "route": "partition",
+      "scores": [
+        {
+          "cost": 24,
+          "peak_elements": 12
+        },
+        {
+          "cost": 2,
+          "peak_elements": 2
+        },
+        {
+          "cost": 1,
+          "peak_elements": 1
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 48,
+          "peak_elements": 36
+        },
+        {
+          "cost": 48,
+          "peak_elements": 12
+        },
+        {
+          "cost": 52,
+          "peak_elements": 6
+        },
+        {
+          "cost": 48,
+          "peak_elements": 6
+        },
+        {
+          "cost": 256,
+          "peak_elements": 216
+        },
+        {
+          "cost": 63,
+          "peak_elements": 36
+        },
+        {
+          "cost": 4,
+          "peak_elements": 3
+        },
+        {
+          "cost": 9,
+          "peak_elements": 6
+        },
+        {
+          "cost": 108,
+          "peak_elements": 18
+        }
+      ]
+    },
+    {
+      "case_count": 14,
+      "child_sha256": "834a1ef1fa1213be2d5468ff56335d5bc077915aa00326c7ddeb6d37aa49cc97",
+      "kind": "local_decision",
+      "paths": [
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            5
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "response": "<<<<<<< SEARCH\n        temp = temperature * (0.02 ** (step / max(1, steps - 1)))\n=======\n        temp = temperature * (0.05 ** (step / max(1, steps - 1)))\n>>>>>>> REPLACE",
+      "response_characters": 170,
+      "response_lines": 5,
+      "response_sha256": "446096b28629baaac66f7b032866dcc211262347dab546bc1b7670e83f9e5b62",
+      "response_utf8_bytes": 170,
+      "route": "tree",
+      "scores": [
+        {
+          "cost": 24,
+          "peak_elements": 12
+        },
+        {
+          "cost": 2,
+          "peak_elements": 2
+        },
+        {
+          "cost": 1,
+          "peak_elements": 1
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 48,
+          "peak_elements": 36
+        },
+        {
+          "cost": 48,
+          "peak_elements": 12
+        },
+        {
+          "cost": 52,
+          "peak_elements": 6
+        },
+        {
+          "cost": 48,
+          "peak_elements": 6
+        },
+        {
+          "cost": 256,
+          "peak_elements": 216
+        },
+        {
+          "cost": 63,
+          "peak_elements": 36
+        },
+        {
+          "cost": 4,
+          "peak_elements": 3
+        },
+        {
+          "cost": 9,
+          "peak_elements": 6
+        },
+        {
+          "cost": 108,
+          "peak_elements": 18
+        }
+      ]
+    },
+    {
+      "case_count": 14,
+      "child_sha256": "09d2f4147ecdaa113b7a477ff6f6f61ef0867570c2f07ce6b092f5b91ecaa4cf",
+      "kind": "replace_search_function",
+      "paths": [
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            2,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "response": "<<<<<<< SEARCH\ndef tree_search_annealing(inputs, output, sizes, *, seed=0, steps=128,\n                          temperature=0.5, peak_limit=None):\n    \"\"\"Seeded binary reassociation rotations, log-cost acceptance, best retained.\"\"\"\n    problem = Problem(inputs, output, sizes)\n    _integer(seed, \"seed\", 0, 2**64 - 1)\n    _integer(steps, \"steps\", 0, 4096)\n    if type(temperature) not in (int, float) or not math.isfinite(temperature) or temperature <= 0:\n        raise ValueError(\"temperature must be positive and finite\")\n    peak_limit = _peak_limit(peak_limit)\n    rng = random.Random(seed)\n    current = best = _balanced(tuple(range(problem.n)))\n    current_stats = best_stats = problem.tree_stats(current)\n\n    def energy(stats):\n        cost, peak = stats\n        violation = max(0.0, math.log(peak) - math.log(peak_limit)) if peak_limit else 0.0\n        return math.log(cost + 1) + 8.0 * violation\n\n    for step in range(steps):\n        eligible = []\n\n        def collect(node, address=()):\n            if type(node) is int:\n                return\n            if type(node[0]) is tuple or type(node[1]) is tuple:\n                eligible.append((address, node))\n            collect(node[0], address + (0,))\n            collect(node[1], address + (1,))\n\n        collect(current)\n        if not eligible:\n            break\n        address, node = rng.choice(eligible)\n        left, right = node\n        proposals = []\n        if type(left) is tuple:\n            a, b = left\n            proposals.extend(((a, (b, right)), (b, (a, right))))\n        if type(right) is tuple:\n            a, b = right\n            proposals.extend((((left, a), b), ((left, b), a)))\n        replacement = rng.choice(proposals)\n\n        def replace(root, route):\n            if not route:\n                return replacement\n            side = route[0]\n            children = list(root)\n            children[side] = replace(children[side], route[1:])\n            return tuple(children)\n\n        candidate = replace(current, address)\n        stats = problem.tree_stats(candidate)\n        if _rank(*stats, peak_limit) < _rank(*best_stats, peak_limit):\n            best, best_stats = candidate, stats\n        delta = energy(stats) - energy(current_stats)\n        temp = temperature * (0.02 ** (step / max(1, steps - 1)))\n        if delta <= 0 or math.log(max(rng.random(), 1e-300)) < -delta / temp:\n            current, current_stats = candidate, stats\n    return tree_to_path(best, problem.n)\n=======\ndef tree_search_annealing(inputs, output, sizes, *, seed=0):\n    problem = Problem(inputs, output, sizes)\n    _integer(seed, 'seed', 0, 2**64 - 1)\n    leaves = tuple(reversed(range(problem.n)))\n    return tree_to_path(_balanced(leaves), problem.n)\n>>>>>>> REPLACE",
+      "response_characters": 2743,
+      "response_lines": 68,
+      "response_sha256": "69805ececed565e559cea226eb281cf9467c5cb37d7dcf95b0c7e7721827367d",
+      "response_utf8_bytes": 2743,
+      "route": "tree",
+      "scores": [
+        {
+          "cost": 24,
+          "peak_elements": 12
+        },
+        {
+          "cost": 2,
+          "peak_elements": 2
+        },
+        {
+          "cost": 1,
+          "peak_elements": 1
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 54,
+          "peak_elements": 36
+        },
+        {
+          "cost": 54,
+          "peak_elements": 18
+        },
+        {
+          "cost": 72,
+          "peak_elements": 9
+        },
+        {
+          "cost": 66,
+          "peak_elements": 9
+        },
+        {
+          "cost": 378,
+          "peak_elements": 216
+        },
+        {
+          "cost": 114,
+          "peak_elements": 36
+        },
+        {
+          "cost": 4,
+          "peak_elements": 3
+        },
+        {
+          "cost": 15,
+          "peak_elements": 6
+        },
+        {
+          "cost": 150,
+          "peak_elements": 18
+        }
+      ]
+    },
+    {
+      "case_count": 14,
+      "child_sha256": "9ad4a7cc96ac26b8598af34ccfcb76ec7939b090791f664e4ef0e2358e1a1204",
+      "kind": "replace_entire_region",
+      "paths": [
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "response": "<<<<<<< SEARCH\n\"\"\"Editable path-search prototypes; standard library only, no solver wrappers.\n\nThe three search policies are deliberately separate. Shared helpers implement\noriginal-leaf identity, hyperedge boundaries and dynamic-position path encoding.\nWork limits are engineering defaults, not measured performance recommendations.\n\"\"\"\n\n\nfrom __future__ import annotations\n\n\nimport math\n\n\nimport random\n\n\nMAX_TENSORS = 256\n\n\nMAX_CACHED_GROUPS = 20000\n\n\ndef _integer(value, name, low, high):\n    if type(value) is not int or not low <= value <= high:\n        raise ValueError(f\"{name} must be an integer in [{low}, {high}]\")\n    return value\n\n\nclass Problem:\n    \"\"\"Represent original leaves and labels by separate integer bit masks.\"\"\"\n\n    def __init__(self, inputs, output, sizes):\n        terms = tuple(tuple(term) for term in inputs)\n        output = tuple(output)\n        _integer(len(terms), \"tensor count\", 2, MAX_TENSORS)\n        if any(any(type(x) is not str for x in term) or len(set(term)) != len(term)\n               for term in terms):\n            raise ValueError(\"inputs require unique string labels; traces unsupported\")\n        if any(type(x) is not str for x in output) or len(set(output)) != len(output):\n            raise ValueError(\"output requires unique string labels\")\n        labels = sorted(set().union(*map(set, terms)))\n        if set(sizes) != set(labels) or not set(output) <= set(labels):\n            raise ValueError(\"sizes and output must match input labels\")\n        for value in sizes.values():\n            _integer(value, \"dimension\", 1, 2**64 - 1)\n        self.n = len(terms)\n        self.full = (1 << self.n) - 1\n        self.dimensions = tuple(sizes[x] for x in labels)\n        index = {label: i for i, label in enumerate(labels)}\n        self.inputs = tuple(sum(1 << index[x] for x in term) for term in terms)\n        self.output = sum(1 << index[x] for x in output)\n        self.incidence = tuple(sum(1 << leaf for leaf, term in enumerate(terms) if x in term)\n                               for x in labels)\n        self.weights = tuple(math.log2(d) for d in self.dimensions)\n        # cotengra 0.8.3 excludes single-input reductions from binary-tree cost.\n        # Keep raw input sizes for the peak, but use effective boundary legs.\n        self._legs = {}\n        self._volumes = {0: 1}\n        self.input_peak = max(self.volume(term) for term in self.inputs)\n\n    def volume(self, labels):\n        cached = self._volumes.get(labels)\n        if cached is not None:\n            return cached\n        value = 1\n        todo = labels\n        while todo:\n            bit = todo & -todo\n            value *= self.dimensions[bit.bit_length() - 1]\n            todo ^= bit\n        if len(self._volumes) < MAX_CACHED_GROUPS:\n            self._volumes[labels] = value\n        return value\n\n    def legs(self, group):\n        cached = self._legs.get(group)\n        if cached is not None:\n            return cached\n        # Effective legs retain a label iff needed by output or outside it.\n        # Unary local sums are excluded from cotengra's binary-tree FLOPs.\n        outside = self.full ^ group\n        result = 0\n        for i, incidence in enumerate(self.incidence):\n            if incidence & group and (incidence & outside or self.output & (1 << i)):\n                result |= 1 << i\n        if len(self._legs) < MAX_CACHED_GROUPS:\n            self._legs[group] = result\n        return result\n\n    def join(self, left, right):\n        return (self.volume(self.legs(left) | self.legs(right)),\n                self.volume(self.legs(left | right)))\n\n    def tree_stats(self, tree):\n        def visit(node):\n            if type(node) is int:\n                return 1 << node, 0, self.volume(self.inputs[node])\n            left, a, pa = visit(node[0])\n            right, b, pb = visit(node[1])\n            cost, size = self.join(left, right)\n            return left | right, a + b + cost, max(pa, pb, size)\n        group, cost, peak = visit(tree)\n        if group != self.full:\n            raise ValueError(\"tree must cover every original input\")\n        return cost, peak\n\n\ndef tree_to_path(tree, n):\n    \"\"\"Postorder original-leaf tree -> current operand positions, append result.\"\"\"\n    active = [1 << i for i in range(n)]\n    path = []\n    seen = set()\n\n    def visit(node):\n        if type(node) is int:\n            if not 0 <= node < n or node in seen:\n                raise ValueError(\"invalid or repeated original leaf\")\n            seen.add(node)\n            return 1 << node\n        if type(node) is not tuple or len(node) != 2:\n            raise ValueError(\"binary tree required\")\n        left, right = visit(node[0]), visit(node[1])\n        i, j = active.index(left), active.index(right)\n        path.append((min(i, j), max(i, j)))\n        for index in sorted((i, j), reverse=True):\n            active.pop(index)\n        active.append(left | right)\n        return left | right\n\n    visit(tree)\n    if len(seen) != n or len(path) != n - 1:\n        raise ValueError(\"incomplete tree\")\n    return path\n\n\ndef _balanced(leaves):\n    if len(leaves) == 1:\n        return leaves[0]\n    midpoint = len(leaves) // 2\n    return _balanced(leaves[:midpoint]), _balanced(leaves[midpoint:])\n\n\ndef _rank(cost, peak, peak_limit):\n    return (max(0, peak - peak_limit) if peak_limit is not None else 0, cost, peak)\n\n\ndef _peak_limit(value):\n    if value is not None:\n        _integer(value, \"peak_limit\", 1, 2**63 - 1)\n    return value\n\n\ndef tree_search_annealing(inputs, output, sizes, *, seed=0, steps=128,\n                          temperature=0.5, peak_limit=None):\n    \"\"\"Seeded binary reassociation rotations, log-cost acceptance, best retained.\"\"\"\n    problem = Problem(inputs, output, sizes)\n    _integer(seed, \"seed\", 0, 2**64 - 1)\n    _integer(steps, \"steps\", 0, 4096)\n    if type(temperature) not in (int, float) or not math.isfinite(temperature) or temperature <= 0:\n        raise ValueError(\"temperature must be positive and finite\")\n    peak_limit = _peak_limit(peak_limit)\n    rng = random.Random(seed)\n    current = best = _balanced(tuple(range(problem.n)))\n    current_stats = best_stats = problem.tree_stats(current)\n\n    def energy(stats):\n        cost, peak = stats\n        violation = max(0.0, math.log(peak) - math.log(peak_limit)) if peak_limit else 0.0\n        return math.log(cost + 1) + 8.0 * violation\n\n    for step in range(steps):\n        eligible = []\n\n        def collect(node, address=()):\n            if type(node) is int:\n                return\n            if type(node[0]) is tuple or type(node[1]) is tuple:\n                eligible.append((address, node))\n            collect(node[0], address + (0,))\n            collect(node[1], address + (1,))\n\n        collect(current)\n        if not eligible:\n            break\n        address, node = rng.choice(eligible)\n        left, right = node\n        proposals = []\n        if type(left) is tuple:\n            a, b = left\n            proposals.extend(((a, (b, right)), (b, (a, right))))\n        if type(right) is tuple:\n            a, b = right\n            proposals.extend((((left, a), b), ((left, b), a)))\n        replacement = rng.choice(proposals)\n\n        def replace(root, route):\n            if not route:\n                return replacement\n            side = route[0]\n            children = list(root)\n            children[side] = replace(children[side], route[1:])\n            return tuple(children)\n\n        candidate = replace(current, address)\n        stats = problem.tree_stats(candidate)\n        if _rank(*stats, peak_limit) < _rank(*best_stats, peak_limit):\n            best, best_stats = candidate, stats\n        delta = energy(stats) - energy(current_stats)\n        temp = temperature * (0.02 ** (step / max(1, steps - 1)))\n        if delta <= 0 or math.log(max(rng.random(), 1e-300)) < -delta / temp:\n            current, current_stats = candidate, stats\n    return tree_to_path(best, problem.n)\n\n\ndef find_path(inputs, output, sizes, seed=0):\n    return tree_search_annealing(inputs, output, sizes, seed=seed)\n=======\n\"\"\"Editable path-search prototypes; standard library only, no solver wrappers.\n\nThe three search policies are deliberately separate. Shared helpers implement\noriginal-leaf identity, hyperedge boundaries and dynamic-position path encoding.\nWork limits are engineering defaults, not measured performance recommendations.\n\"\"\"\n\n\nfrom __future__ import annotations\n\n\nimport math\n\n\nimport random\n\n\nMAX_TENSORS = 256\n\n\nMAX_CACHED_GROUPS = 20000\n\n\ndef _integer(value, name, low, high):\n    if type(value) is not int or not low <= value <= high:\n        raise ValueError(f\"{name} must be an integer in [{low}, {high}]\")\n    return value\n\n\nclass Problem:\n    \"\"\"Represent original leaves and labels by separate integer bit masks.\"\"\"\n\n    def __init__(self, inputs, output, sizes):\n        terms = tuple(tuple(term) for term in inputs)\n        output = tuple(output)\n        _integer(len(terms), \"tensor count\", 2, MAX_TENSORS)\n        if any(any(type(x) is not str for x in term) or len(set(term)) != len(term)\n               for term in terms):\n            raise ValueError(\"inputs require unique string labels; traces unsupported\")\n        if any(type(x) is not str for x in output) or len(set(output)) != len(output):\n            raise ValueError(\"output requires unique string labels\")\n        labels = sorted(set().union(*map(set, terms)))\n        if set(sizes) != set(labels) or not set(output) <= set(labels):\n            raise ValueError(\"sizes and output must match input labels\")\n        for value in sizes.values():\n            _integer(value, \"dimension\", 1, 2**64 - 1)\n        self.n = len(terms)\n        self.full = (1 << self.n) - 1\n        self.dimensions = tuple(sizes[x] for x in labels)\n        index = {label: i for i, label in enumerate(labels)}\n        self.inputs = tuple(sum(1 << index[x] for x in term) for term in terms)\n        self.output = sum(1 << index[x] for x in output)\n        self.incidence = tuple(sum(1 << leaf for leaf, term in enumerate(terms) if x in term)\n                               for x in labels)\n        self.weights = tuple(math.log2(d) for d in self.dimensions)\n        # cotengra 0.8.3 excludes single-input reductions from binary-tree cost.\n        # Keep raw input sizes for the peak, but use effective boundary legs.\n        self._legs = {}\n        self._volumes = {0: 1}\n        self.input_peak = max(self.volume(term) for term in self.inputs)\n\n    def volume(self, labels):\n        cached = self._volumes.get(labels)\n        if cached is not None:\n            return cached\n        value = 1\n        todo = labels\n        while todo:\n            bit = todo & -todo\n            value *= self.dimensions[bit.bit_length() - 1]\n            todo ^= bit\n        if len(self._volumes) < MAX_CACHED_GROUPS:\n            self._volumes[labels] = value\n        return value\n\n    def legs(self, group):\n        cached = self._legs.get(group)\n        if cached is not None:\n            return cached\n        # Effective legs retain a label iff needed by output or outside it.\n        # Unary local sums are excluded from cotengra's binary-tree FLOPs.\n        outside = self.full ^ group\n        result = 0\n        for i, incidence in enumerate(self.incidence):\n            if incidence & group and (incidence & outside or self.output & (1 << i)):\n                result |= 1 << i\n        if len(self._legs) < MAX_CACHED_GROUPS:\n            self._legs[group] = result\n        return result\n\n    def join(self, left, right):\n        return (self.volume(self.legs(left) | self.legs(right)),\n                self.volume(self.legs(left | right)))\n\n    def tree_stats(self, tree):\n        def visit(node):\n            if type(node) is int:\n                return 1 << node, 0, self.volume(self.inputs[node])\n            left, a, pa = visit(node[0])\n            right, b, pb = visit(node[1])\n            cost, size = self.join(left, right)\n            return left | right, a + b + cost, max(pa, pb, size)\n        group, cost, peak = visit(tree)\n        if group != self.full:\n            raise ValueError(\"tree must cover every original input\")\n        return cost, peak\n\n\ndef tree_to_path(tree, n):\n    \"\"\"Postorder original-leaf tree -> current operand positions, append result.\"\"\"\n    active = [1 << i for i in range(n)]\n    path = []\n    seen = set()\n\n    def visit(node):\n        if type(node) is int:\n            if not 0 <= node < n or node in seen:\n                raise ValueError(\"invalid or repeated original leaf\")\n            seen.add(node)\n            return 1 << node\n        if type(node) is not tuple or len(node) != 2:\n            raise ValueError(\"binary tree required\")\n        left, right = visit(node[0]), visit(node[1])\n        i, j = active.index(left), active.index(right)\n        path.append((min(i, j), max(i, j)))\n        for index in sorted((i, j), reverse=True):\n            active.pop(index)\n        active.append(left | right)\n        return left | right\n\n    visit(tree)\n    if len(seen) != n or len(path) != n - 1:\n        raise ValueError(\"incomplete tree\")\n    return path\n\n\ndef _balanced(leaves):\n    if len(leaves) == 1:\n        return leaves[0]\n    midpoint = len(leaves) // 2\n    return _balanced(leaves[:midpoint]), _balanced(leaves[midpoint:])\n\n\ndef _rank(cost, peak, peak_limit):\n    return (max(0, peak - peak_limit) if peak_limit is not None else 0, cost, peak)\n\n\ndef _peak_limit(value):\n    if value is not None:\n        _integer(value, \"peak_limit\", 1, 2**63 - 1)\n    return value\n\n\ndef budgeted_beam_search(inputs, output, sizes, *, seed=0, width=8,\n                         max_expansions=256, peak_limit=None, diagnostics=None):\n    \"\"\"Beam over exact leaf partitions with bounded expansion and full incumbent.\n\n    Always retain a complete balanced-tree fallback. A truncated state is never\n    returned. States with equal partitions retain nondominated (cost, peak)\n    histories before beam pruning. This pruning gives no optimality guarantee.\n    \"\"\"\n    problem = Problem(inputs, output, sizes)\n    _integer(seed, \"seed\", 0, 2**64 - 1)\n    _integer(width, \"width\", 1, 64)\n    _integer(max_expansions, \"max_expansions\", 0, 100000)\n    peak_limit = _peak_limit(peak_limit)\n    incumbent = _balanced(tuple(range(problem.n)))\n    incumbent_stats = problem.tree_stats(incumbent)\n    # State: canonical partition, matching trees, accumulated cost, historical peak.\n    beam = [(tuple(1 << i for i in range(problem.n)), tuple(range(problem.n)),\n             0, problem.input_peak)]\n    expansions = 0\n    completed = 0\n    incumbent_replaced = False\n    while beam and expansions < max_expansions:\n        pool = {}\n        # Spread work over remaining depths so the first quadratic pair layer\n        # cannot consume every expansion before a searched tree is completed.\n        remaining_depth = len(beam[0][0]) - 1\n        layer_stop = expansions + max(1, (max_expansions - expansions) // remaining_depth)\n        for partition, trees, total, peak in beam:\n            for i in range(len(partition)):\n                for j in range(i + 1, len(partition)):\n                    if expansions >= layer_stop:\n                        break\n                    expansions += 1\n                    cost, size = problem.join(partition[i], partition[j])\n                    merged = partition[i] | partition[j]\n                    joined_tree = (trees[i], trees[j])\n                    items = [(part, tree) for k, (part, tree) in enumerate(zip(partition, trees))\n                             if k not in (i, j)] + [(merged, joined_tree)]\n                    items.sort(key=lambda item: item[0])\n                    parts, forest = tuple(x[0] for x in items), tuple(x[1] for x in items)\n                    state = (parts, forest, total + cost, max(peak, size))\n                    if len(parts) == 1:\n                        completed += 1\n                        if _rank(*state[2:], peak_limit) < _rank(*incumbent_stats, peak_limit):\n                            incumbent, incumbent_stats = forest[0], state[2:]\n                            incumbent_replaced = True\n                        continue\n                    frontier = pool.setdefault(parts, [])\n                    if any(old[2] <= state[2] and old[3] <= state[3] for old in frontier):\n                        continue\n                    frontier[:] = [old for old in frontier\n                                   if not (state[2] <= old[2] and state[3] <= old[3])]\n                    frontier.append(state)\n                if expansions >= layer_stop:\n                    break\n            if expansions >= layer_stop:\n                break\n        candidates = [state for frontier in pool.values() for state in frontier]\n        # Remaining merges each cost >= 1. This weak bound is not used to claim\n        # global optimality; finite width and budget still discard candidates.\n        beam = sorted(candidates, key=lambda s: (\n            max(0, s[3] - peak_limit) if peak_limit else 0,\n            s[2] + len(s[0]) - 1, s[3], s[0], repr(s[1])))[:width]\n    if diagnostics is not None:\n        diagnostics.update(expansions=expansions, complete_states=completed,\n                           used_initial_incumbent=not incumbent_replaced,\n                           cost=incumbent_stats[0], peak_elements=incumbent_stats[1])\n    return tree_to_path(incumbent, problem.n)\n\n\ndef find_path(inputs, output, sizes, seed=0):\n    return budgeted_beam_search(inputs, output, sizes, seed=seed)\n>>>>>>> REPLACE",
+      "response_characters": 17489,
+      "response_lines": 445,
+      "response_sha256": "ae501d73154cbf23a28150ad225913ed15ea7543bcd45c8e1770e9e83266bf99",
+      "response_utf8_bytes": 17489,
+      "route": "tree",
+      "scores": [
+        {
+          "cost": 24,
+          "peak_elements": 12
+        },
+        {
+          "cost": 2,
+          "peak_elements": 2
+        },
+        {
+          "cost": 1,
+          "peak_elements": 1
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 48,
+          "peak_elements": 36
+        },
+        {
+          "cost": 48,
+          "peak_elements": 12
+        },
+        {
+          "cost": 52,
+          "peak_elements": 6
+        },
+        {
+          "cost": 48,
+          "peak_elements": 6
+        },
+        {
+          "cost": 256,
+          "peak_elements": 216
+        },
+        {
+          "cost": 63,
+          "peak_elements": 36
+        },
+        {
+          "cost": 4,
+          "peak_elements": 3
+        },
+        {
+          "cost": 9,
+          "peak_elements": 6
+        },
+        {
+          "cost": 108,
+          "peak_elements": 18
+        }
+      ]
+    },
+    {
+      "case_count": 14,
+      "child_sha256": "91b3e63570aea5068bc581eac508cc680fa916f27f183a57138d434eb5ccc45c",
+      "kind": "local_decision",
+      "paths": [
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            3
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "response": "<<<<<<< SEARCH\n            s[2] + len(s[0]) - 1, s[3], s[0], repr(s[1])))[:width]\n=======\n            s[2] + 2 * (len(s[0]) - 1), s[3], s[0], repr(s[1])))[:width]\n>>>>>>> REPLACE",
+      "response_characters": 178,
+      "response_lines": 5,
+      "response_sha256": "ad6ff3b218f354079cce05f469d451b67f9dfe0c82459d3e3c7b8d7ab708deb0",
+      "response_utf8_bytes": 178,
+      "route": "beam",
+      "scores": [
+        {
+          "cost": 24,
+          "peak_elements": 12
+        },
+        {
+          "cost": 2,
+          "peak_elements": 2
+        },
+        {
+          "cost": 1,
+          "peak_elements": 1
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 48,
+          "peak_elements": 36
+        },
+        {
+          "cost": 48,
+          "peak_elements": 12
+        },
+        {
+          "cost": 52,
+          "peak_elements": 6
+        },
+        {
+          "cost": 48,
+          "peak_elements": 6
+        },
+        {
+          "cost": 256,
+          "peak_elements": 216
+        },
+        {
+          "cost": 63,
+          "peak_elements": 36
+        },
+        {
+          "cost": 4,
+          "peak_elements": 3
+        },
+        {
+          "cost": 9,
+          "peak_elements": 6
+        },
+        {
+          "cost": 108,
+          "peak_elements": 18
+        }
+      ]
+    },
+    {
+      "case_count": 14,
+      "child_sha256": "e980b68fc8660dfcd1fcbdaafd9d64613119b4e15577f6d3384578ee41f3a653",
+      "kind": "replace_search_function",
+      "paths": [
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            2,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            3,
+            4
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "response": "<<<<<<< SEARCH\ndef budgeted_beam_search(inputs, output, sizes, *, seed=0, width=8,\n                         max_expansions=256, peak_limit=None, diagnostics=None):\n    \"\"\"Beam over exact leaf partitions with bounded expansion and full incumbent.\n\n    Always retain a complete balanced-tree fallback. A truncated state is never\n    returned. States with equal partitions retain nondominated (cost, peak)\n    histories before beam pruning. This pruning gives no optimality guarantee.\n    \"\"\"\n    problem = Problem(inputs, output, sizes)\n    _integer(seed, \"seed\", 0, 2**64 - 1)\n    _integer(width, \"width\", 1, 64)\n    _integer(max_expansions, \"max_expansions\", 0, 100000)\n    peak_limit = _peak_limit(peak_limit)\n    incumbent = _balanced(tuple(range(problem.n)))\n    incumbent_stats = problem.tree_stats(incumbent)\n    # State: canonical partition, matching trees, accumulated cost, historical peak.\n    beam = [(tuple(1 << i for i in range(problem.n)), tuple(range(problem.n)),\n             0, problem.input_peak)]\n    expansions = 0\n    completed = 0\n    incumbent_replaced = False\n    while beam and expansions < max_expansions:\n        pool = {}\n        # Spread work over remaining depths so the first quadratic pair layer\n        # cannot consume every expansion before a searched tree is completed.\n        remaining_depth = len(beam[0][0]) - 1\n        layer_stop = expansions + max(1, (max_expansions - expansions) // remaining_depth)\n        for partition, trees, total, peak in beam:\n            for i in range(len(partition)):\n                for j in range(i + 1, len(partition)):\n                    if expansions >= layer_stop:\n                        break\n                    expansions += 1\n                    cost, size = problem.join(partition[i], partition[j])\n                    merged = partition[i] | partition[j]\n                    joined_tree = (trees[i], trees[j])\n                    items = [(part, tree) for k, (part, tree) in enumerate(zip(partition, trees))\n                             if k not in (i, j)] + [(merged, joined_tree)]\n                    items.sort(key=lambda item: item[0])\n                    parts, forest = tuple(x[0] for x in items), tuple(x[1] for x in items)\n                    state = (parts, forest, total + cost, max(peak, size))\n                    if len(parts) == 1:\n                        completed += 1\n                        if _rank(*state[2:], peak_limit) < _rank(*incumbent_stats, peak_limit):\n                            incumbent, incumbent_stats = forest[0], state[2:]\n                            incumbent_replaced = True\n                        continue\n                    frontier = pool.setdefault(parts, [])\n                    if any(old[2] <= state[2] and old[3] <= state[3] for old in frontier):\n                        continue\n                    frontier[:] = [old for old in frontier\n                                   if not (state[2] <= old[2] and state[3] <= old[3])]\n                    frontier.append(state)\n                if expansions >= layer_stop:\n                    break\n            if expansions >= layer_stop:\n                break\n        candidates = [state for frontier in pool.values() for state in frontier]\n        # Remaining merges each cost >= 1. This weak bound is not used to claim\n        # global optimality; finite width and budget still discard candidates.\n        beam = sorted(candidates, key=lambda s: (\n            max(0, s[3] - peak_limit) if peak_limit else 0,\n            s[2] + len(s[0]) - 1, s[3], s[0], repr(s[1])))[:width]\n    if diagnostics is not None:\n        diagnostics.update(expansions=expansions, complete_states=completed,\n                           used_initial_incumbent=not incumbent_replaced,\n                           cost=incumbent_stats[0], peak_elements=incumbent_stats[1])\n    return tree_to_path(incumbent, problem.n)\n=======\ndef budgeted_beam_search(inputs, output, sizes, *, seed=0):\n    problem = Problem(inputs, output, sizes)\n    _integer(seed, 'seed', 0, 2**64 - 1)\n    leaves = tuple(reversed(range(problem.n)))\n    return tree_to_path(_balanced(leaves), problem.n)\n>>>>>>> REPLACE",
+      "response_characters": 4136,
+      "response_lines": 76,
+      "response_sha256": "e728c17b88ae9e5ae542bb5e6567343b2fb99e4c5551ea34ea2f2f73b4011246",
+      "response_utf8_bytes": 4136,
+      "route": "beam",
+      "scores": [
+        {
+          "cost": 24,
+          "peak_elements": 12
+        },
+        {
+          "cost": 2,
+          "peak_elements": 2
+        },
+        {
+          "cost": 1,
+          "peak_elements": 1
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 54,
+          "peak_elements": 36
+        },
+        {
+          "cost": 54,
+          "peak_elements": 18
+        },
+        {
+          "cost": 72,
+          "peak_elements": 9
+        },
+        {
+          "cost": 66,
+          "peak_elements": 9
+        },
+        {
+          "cost": 378,
+          "peak_elements": 216
+        },
+        {
+          "cost": 114,
+          "peak_elements": 36
+        },
+        {
+          "cost": 4,
+          "peak_elements": 3
+        },
+        {
+          "cost": 15,
+          "peak_elements": 6
+        },
+        {
+          "cost": 150,
+          "peak_elements": 18
+        }
+      ]
+    },
+    {
+      "case_count": 14,
+      "child_sha256": "a56599465e018211d76ca8323e2afc89cb7f557a048957938e02caadb8bd6512",
+      "kind": "replace_entire_region",
+      "paths": [
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            0,
+            3
+          ],
+          [
+            0,
+            1
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            2,
+            3
+          ],
+          [
+            2,
+            3
+          ],
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ]
+      ],
+      "response": "<<<<<<< SEARCH\n\"\"\"Editable path-search prototypes; standard library only, no solver wrappers.\n\nThe three search policies are deliberately separate. Shared helpers implement\noriginal-leaf identity, hyperedge boundaries and dynamic-position path encoding.\nWork limits are engineering defaults, not measured performance recommendations.\n\"\"\"\n\n\nfrom __future__ import annotations\n\n\nimport math\n\n\nimport random\n\n\nMAX_TENSORS = 256\n\n\nMAX_CACHED_GROUPS = 20000\n\n\ndef _integer(value, name, low, high):\n    if type(value) is not int or not low <= value <= high:\n        raise ValueError(f\"{name} must be an integer in [{low}, {high}]\")\n    return value\n\n\nclass Problem:\n    \"\"\"Represent original leaves and labels by separate integer bit masks.\"\"\"\n\n    def __init__(self, inputs, output, sizes):\n        terms = tuple(tuple(term) for term in inputs)\n        output = tuple(output)\n        _integer(len(terms), \"tensor count\", 2, MAX_TENSORS)\n        if any(any(type(x) is not str for x in term) or len(set(term)) != len(term)\n               for term in terms):\n            raise ValueError(\"inputs require unique string labels; traces unsupported\")\n        if any(type(x) is not str for x in output) or len(set(output)) != len(output):\n            raise ValueError(\"output requires unique string labels\")\n        labels = sorted(set().union(*map(set, terms)))\n        if set(sizes) != set(labels) or not set(output) <= set(labels):\n            raise ValueError(\"sizes and output must match input labels\")\n        for value in sizes.values():\n            _integer(value, \"dimension\", 1, 2**64 - 1)\n        self.n = len(terms)\n        self.full = (1 << self.n) - 1\n        self.dimensions = tuple(sizes[x] for x in labels)\n        index = {label: i for i, label in enumerate(labels)}\n        self.inputs = tuple(sum(1 << index[x] for x in term) for term in terms)\n        self.output = sum(1 << index[x] for x in output)\n        self.incidence = tuple(sum(1 << leaf for leaf, term in enumerate(terms) if x in term)\n                               for x in labels)\n        self.weights = tuple(math.log2(d) for d in self.dimensions)\n        # cotengra 0.8.3 excludes single-input reductions from binary-tree cost.\n        # Keep raw input sizes for the peak, but use effective boundary legs.\n        self._legs = {}\n        self._volumes = {0: 1}\n        self.input_peak = max(self.volume(term) for term in self.inputs)\n\n    def volume(self, labels):\n        cached = self._volumes.get(labels)\n        if cached is not None:\n            return cached\n        value = 1\n        todo = labels\n        while todo:\n            bit = todo & -todo\n            value *= self.dimensions[bit.bit_length() - 1]\n            todo ^= bit\n        if len(self._volumes) < MAX_CACHED_GROUPS:\n            self._volumes[labels] = value\n        return value\n\n    def legs(self, group):\n        cached = self._legs.get(group)\n        if cached is not None:\n            return cached\n        # Effective legs retain a label iff needed by output or outside it.\n        # Unary local sums are excluded from cotengra's binary-tree FLOPs.\n        outside = self.full ^ group\n        result = 0\n        for i, incidence in enumerate(self.incidence):\n            if incidence & group and (incidence & outside or self.output & (1 << i)):\n                result |= 1 << i\n        if len(self._legs) < MAX_CACHED_GROUPS:\n            self._legs[group] = result\n        return result\n\n    def join(self, left, right):\n        return (self.volume(self.legs(left) | self.legs(right)),\n                self.volume(self.legs(left | right)))\n\n    def tree_stats(self, tree):\n        def visit(node):\n            if type(node) is int:\n                return 1 << node, 0, self.volume(self.inputs[node])\n            left, a, pa = visit(node[0])\n            right, b, pb = visit(node[1])\n            cost, size = self.join(left, right)\n            return left | right, a + b + cost, max(pa, pb, size)\n        group, cost, peak = visit(tree)\n        if group != self.full:\n            raise ValueError(\"tree must cover every original input\")\n        return cost, peak\n\n\ndef tree_to_path(tree, n):\n    \"\"\"Postorder original-leaf tree -> current operand positions, append result.\"\"\"\n    active = [1 << i for i in range(n)]\n    path = []\n    seen = set()\n\n    def visit(node):\n        if type(node) is int:\n            if not 0 <= node < n or node in seen:\n                raise ValueError(\"invalid or repeated original leaf\")\n            seen.add(node)\n            return 1 << node\n        if type(node) is not tuple or len(node) != 2:\n            raise ValueError(\"binary tree required\")\n        left, right = visit(node[0]), visit(node[1])\n        i, j = active.index(left), active.index(right)\n        path.append((min(i, j), max(i, j)))\n        for index in sorted((i, j), reverse=True):\n            active.pop(index)\n        active.append(left | right)\n        return left | right\n\n    visit(tree)\n    if len(seen) != n or len(path) != n - 1:\n        raise ValueError(\"incomplete tree\")\n    return path\n\n\ndef _balanced(leaves):\n    if len(leaves) == 1:\n        return leaves[0]\n    midpoint = len(leaves) // 2\n    return _balanced(leaves[:midpoint]), _balanced(leaves[midpoint:])\n\n\ndef _rank(cost, peak, peak_limit):\n    return (max(0, peak - peak_limit) if peak_limit is not None else 0, cost, peak)\n\n\ndef _peak_limit(value):\n    if value is not None:\n        _integer(value, \"peak_limit\", 1, 2**63 - 1)\n    return value\n\n\ndef budgeted_beam_search(inputs, output, sizes, *, seed=0, width=8,\n                         max_expansions=256, peak_limit=None, diagnostics=None):\n    \"\"\"Beam over exact leaf partitions with bounded expansion and full incumbent.\n\n    Always retain a complete balanced-tree fallback. A truncated state is never\n    returned. States with equal partitions retain nondominated (cost, peak)\n    histories before beam pruning. This pruning gives no optimality guarantee.\n    \"\"\"\n    problem = Problem(inputs, output, sizes)\n    _integer(seed, \"seed\", 0, 2**64 - 1)\n    _integer(width, \"width\", 1, 64)\n    _integer(max_expansions, \"max_expansions\", 0, 100000)\n    peak_limit = _peak_limit(peak_limit)\n    incumbent = _balanced(tuple(range(problem.n)))\n    incumbent_stats = problem.tree_stats(incumbent)\n    # State: canonical partition, matching trees, accumulated cost, historical peak.\n    beam = [(tuple(1 << i for i in range(problem.n)), tuple(range(problem.n)),\n             0, problem.input_peak)]\n    expansions = 0\n    completed = 0\n    incumbent_replaced = False\n    while beam and expansions < max_expansions:\n        pool = {}\n        # Spread work over remaining depths so the first quadratic pair layer\n        # cannot consume every expansion before a searched tree is completed.\n        remaining_depth = len(beam[0][0]) - 1\n        layer_stop = expansions + max(1, (max_expansions - expansions) // remaining_depth)\n        for partition, trees, total, peak in beam:\n            for i in range(len(partition)):\n                for j in range(i + 1, len(partition)):\n                    if expansions >= layer_stop:\n                        break\n                    expansions += 1\n                    cost, size = problem.join(partition[i], partition[j])\n                    merged = partition[i] | partition[j]\n                    joined_tree = (trees[i], trees[j])\n                    items = [(part, tree) for k, (part, tree) in enumerate(zip(partition, trees))\n                             if k not in (i, j)] + [(merged, joined_tree)]\n                    items.sort(key=lambda item: item[0])\n                    parts, forest = tuple(x[0] for x in items), tuple(x[1] for x in items)\n                    state = (parts, forest, total + cost, max(peak, size))\n                    if len(parts) == 1:\n                        completed += 1\n                        if _rank(*state[2:], peak_limit) < _rank(*incumbent_stats, peak_limit):\n                            incumbent, incumbent_stats = forest[0], state[2:]\n                            incumbent_replaced = True\n                        continue\n                    frontier = pool.setdefault(parts, [])\n                    if any(old[2] <= state[2] and old[3] <= state[3] for old in frontier):\n                        continue\n                    frontier[:] = [old for old in frontier\n                                   if not (state[2] <= old[2] and state[3] <= old[3])]\n                    frontier.append(state)\n                if expansions >= layer_stop:\n                    break\n            if expansions >= layer_stop:\n                break\n        candidates = [state for frontier in pool.values() for state in frontier]\n        # Remaining merges each cost >= 1. This weak bound is not used to claim\n        # global optimality; finite width and budget still discard candidates.\n        beam = sorted(candidates, key=lambda s: (\n            max(0, s[3] - peak_limit) if peak_limit else 0,\n            s[2] + len(s[0]) - 1, s[3], s[0], repr(s[1])))[:width]\n    if diagnostics is not None:\n        diagnostics.update(expansions=expansions, complete_states=completed,\n                           used_initial_incumbent=not incumbent_replaced,\n                           cost=incumbent_stats[0], peak_elements=incumbent_stats[1])\n    return tree_to_path(incumbent, problem.n)\n\n\ndef find_path(inputs, output, sizes, seed=0):\n    return budgeted_beam_search(inputs, output, sizes, seed=seed)\n=======\n\"\"\"Editable path-search prototypes; standard library only, no solver wrappers.\n\nThe three search policies are deliberately separate. Shared helpers implement\noriginal-leaf identity, hyperedge boundaries and dynamic-position path encoding.\nWork limits are engineering defaults, not measured performance recommendations.\n\"\"\"\n\n\nfrom __future__ import annotations\n\n\nimport math\n\n\nimport random\n\n\nMAX_TENSORS = 256\n\n\nMAX_CACHED_GROUPS = 20000\n\n\ndef _integer(value, name, low, high):\n    if type(value) is not int or not low <= value <= high:\n        raise ValueError(f\"{name} must be an integer in [{low}, {high}]\")\n    return value\n\n\nclass Problem:\n    \"\"\"Represent original leaves and labels by separate integer bit masks.\"\"\"\n\n    def __init__(self, inputs, output, sizes):\n        terms = tuple(tuple(term) for term in inputs)\n        output = tuple(output)\n        _integer(len(terms), \"tensor count\", 2, MAX_TENSORS)\n        if any(any(type(x) is not str for x in term) or len(set(term)) != len(term)\n               for term in terms):\n            raise ValueError(\"inputs require unique string labels; traces unsupported\")\n        if any(type(x) is not str for x in output) or len(set(output)) != len(output):\n            raise ValueError(\"output requires unique string labels\")\n        labels = sorted(set().union(*map(set, terms)))\n        if set(sizes) != set(labels) or not set(output) <= set(labels):\n            raise ValueError(\"sizes and output must match input labels\")\n        for value in sizes.values():\n            _integer(value, \"dimension\", 1, 2**64 - 1)\n        self.n = len(terms)\n        self.full = (1 << self.n) - 1\n        self.dimensions = tuple(sizes[x] for x in labels)\n        index = {label: i for i, label in enumerate(labels)}\n        self.inputs = tuple(sum(1 << index[x] for x in term) for term in terms)\n        self.output = sum(1 << index[x] for x in output)\n        self.incidence = tuple(sum(1 << leaf for leaf, term in enumerate(terms) if x in term)\n                               for x in labels)\n        self.weights = tuple(math.log2(d) for d in self.dimensions)\n        # cotengra 0.8.3 excludes single-input reductions from binary-tree cost.\n        # Keep raw input sizes for the peak, but use effective boundary legs.\n        self._legs = {}\n        self._volumes = {0: 1}\n        self.input_peak = max(self.volume(term) for term in self.inputs)\n\n    def volume(self, labels):\n        cached = self._volumes.get(labels)\n        if cached is not None:\n            return cached\n        value = 1\n        todo = labels\n        while todo:\n            bit = todo & -todo\n            value *= self.dimensions[bit.bit_length() - 1]\n            todo ^= bit\n        if len(self._volumes) < MAX_CACHED_GROUPS:\n            self._volumes[labels] = value\n        return value\n\n    def legs(self, group):\n        cached = self._legs.get(group)\n        if cached is not None:\n            return cached\n        # Effective legs retain a label iff needed by output or outside it.\n        # Unary local sums are excluded from cotengra's binary-tree FLOPs.\n        outside = self.full ^ group\n        result = 0\n        for i, incidence in enumerate(self.incidence):\n            if incidence & group and (incidence & outside or self.output & (1 << i)):\n                result |= 1 << i\n        if len(self._legs) < MAX_CACHED_GROUPS:\n            self._legs[group] = result\n        return result\n\n    def join(self, left, right):\n        return (self.volume(self.legs(left) | self.legs(right)),\n                self.volume(self.legs(left | right)))\n\n    def tree_stats(self, tree):\n        def visit(node):\n            if type(node) is int:\n                return 1 << node, 0, self.volume(self.inputs[node])\n            left, a, pa = visit(node[0])\n            right, b, pb = visit(node[1])\n            cost, size = self.join(left, right)\n            return left | right, a + b + cost, max(pa, pb, size)\n        group, cost, peak = visit(tree)\n        if group != self.full:\n            raise ValueError(\"tree must cover every original input\")\n        return cost, peak\n\n\ndef tree_to_path(tree, n):\n    \"\"\"Postorder original-leaf tree -> current operand positions, append result.\"\"\"\n    active = [1 << i for i in range(n)]\n    path = []\n    seen = set()\n\n    def visit(node):\n        if type(node) is int:\n            if not 0 <= node < n or node in seen:\n                raise ValueError(\"invalid or repeated original leaf\")\n            seen.add(node)\n            return 1 << node\n        if type(node) is not tuple or len(node) != 2:\n            raise ValueError(\"binary tree required\")\n        left, right = visit(node[0]), visit(node[1])\n        i, j = active.index(left), active.index(right)\n        path.append((min(i, j), max(i, j)))\n        for index in sorted((i, j), reverse=True):\n            active.pop(index)\n        active.append(left | right)\n        return left | right\n\n    visit(tree)\n    if len(seen) != n or len(path) != n - 1:\n        raise ValueError(\"incomplete tree\")\n    return path\n\n\ndef _balanced(leaves):\n    if len(leaves) == 1:\n        return leaves[0]\n    midpoint = len(leaves) // 2\n    return _balanced(leaves[:midpoint]), _balanced(leaves[midpoint:])\n\n\ndef _rank(cost, peak, peak_limit):\n    return (max(0, peak - peak_limit) if peak_limit is not None else 0, cost, peak)\n\n\ndef _peak_limit(value):\n    if value is not None:\n        _integer(value, \"peak_limit\", 1, 2**63 - 1)\n    return value\n\n\ndef recursive_hypergraph_partition(inputs, output, sizes, *, seed=0, cutoff=4,\n                                    refinement_sweeps=4, partition_trials=2,\n                                    peak_limit=None):\n    \"\"\"Balanced dimension-weighted hyperedge cuts; exact tiny-subtree search.\n\n    Each hyperedge contributes its weight once to a cut, regardless of arity.\n    This is a small editable partition heuristic, not a KaHyPar implementation.\n    \"\"\"\n    problem = Problem(inputs, output, sizes)\n    _integer(seed, \"seed\", 0, 2**64 - 1)\n    _integer(cutoff, \"cutoff\", 2, 6)\n    _integer(refinement_sweeps, \"refinement_sweeps\", 0, 16)\n    _integer(partition_trials, \"partition_trials\", 1, 8)\n    peak_limit = _peak_limit(peak_limit)\n    rng = random.Random(seed)\n    exact = {}\n\n    def small(group):\n        if group in exact:\n            return exact[group]\n        if group.bit_count() == 1:\n            answer = [(group.bit_length() - 1, 0,\n                       problem.volume(problem.inputs[group.bit_length() - 1]))]\n        else:\n            first = group & -group\n            answer = []\n            left = (group - 1) & group\n            while left:\n                right = group ^ left\n                if right and left & first:\n                    cost, size = problem.join(left, right)\n                    for a, ca, pa in small(left):\n                        for b, cb, pb in small(right):\n                            candidate = ((a, b), ca + cb + cost, max(pa, pb, size))\n                            if any(old[1] <= candidate[1] and old[2] <= candidate[2]\n                                   for old in answer):\n                                continue\n                            answer[:] = [old for old in answer\n                                         if not (candidate[1] <= old[1] and candidate[2] <= old[2])]\n                            answer.append(candidate)\n                left = (left - 1) & group\n        exact[group] = answer\n        return answer\n\n    def recurse(group):\n        if group.bit_count() <= cutoff:\n            return min(small(group), key=lambda item: _rank(*item[1:], peak_limit))[0]\n        leaves = [i for i in range(problem.n) if group & (1 << i)]\n        minimum = max(1, len(leaves) // 4)\n\n        def objective(left):\n            right = group ^ left\n            cut = sum(weight for incidence, weight in zip(problem.incidence, problem.weights)\n                      if incidence & left and incidence & right)\n            return cut + abs(left.bit_count() - right.bit_count()) / len(leaves)\n\n        best = None\n        for trial_index in range(partition_trials):\n            order = leaves.copy()\n            rng.shuffle(order)\n            if trial_index == 0:\n                # A connected traversal avoids starting every cut as scattered\n                # random islands. The remaining trials retain random starts.\n                pending = set(leaves)\n                traversal = []\n                for start in order:\n                    if start not in pending:\n                        continue\n                    queue = [start]\n                    pending.remove(start)\n                    for node in queue:\n                        traversal.append(node)\n                        neighbors = 0\n                        for incidence in problem.incidence:\n                            if incidence & (1 << node):\n                                neighbors |= incidence & group\n                        for neighbor in order:\n                            if neighbor in pending and neighbors & (1 << neighbor):\n                                pending.remove(neighbor)\n                                queue.append(neighbor)\n                order = traversal\n            left = sum(1 << i for i in order[:len(leaves) // 2])\n            score = objective(left)\n            for _ in range(refinement_sweeps):\n                rng.shuffle(order)\n                changed = False\n                for node in order:\n                    proposed = left ^ (1 << node)\n                    if not minimum <= proposed.bit_count() <= len(leaves) - minimum:\n                        continue\n                    trial = objective(proposed)\n                    if trial < score:\n                        left, score, changed = proposed, trial, True\n                if not changed:\n                    break\n            # Normalize side identity so ties are deterministic.\n            left = min(left, group ^ left)\n            candidate = (objective(left), left)\n            if best is None or candidate < best:\n                best = candidate\n        left = best[1]\n        return recurse(left), recurse(group ^ left)\n\n    return tree_to_path(recurse(problem.full), problem.n)\n\n\ndef find_path(inputs, output, sizes, seed=0):\n    return recursive_hypergraph_partition(inputs, output, sizes, seed=seed)\n>>>>>>> REPLACE",
+      "response_characters": 19761,
+      "response_lines": 489,
+      "response_sha256": "f19fe7570f0126681c76e8484b8cbe9fadee753d9c9bb4f91ebc8ee2bd7d868c",
+      "response_utf8_bytes": 19761,
+      "route": "beam",
+      "scores": [
+        {
+          "cost": 24,
+          "peak_elements": 12
+        },
+        {
+          "cost": 2,
+          "peak_elements": 2
+        },
+        {
+          "cost": 1,
+          "peak_elements": 1
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 6,
+          "peak_elements": 6
+        },
+        {
+          "cost": 48,
+          "peak_elements": 36
+        },
+        {
+          "cost": 48,
+          "peak_elements": 12
+        },
+        {
+          "cost": 52,
+          "peak_elements": 6
+        },
+        {
+          "cost": 48,
+          "peak_elements": 6
+        },
+        {
+          "cost": 258,
+          "peak_elements": 216
+        },
+        {
+          "cost": 63,
+          "peak_elements": 36
+        },
+        {
+          "cost": 4,
+          "peak_elements": 3
+        },
+        {
+          "cost": 9,
+          "peak_elements": 6
+        },
+        {
+          "cost": 156,
+          "peak_elements": 24
+        }
+      ]
+    }
+  ],
+  "exports": {
+    "beam": {
+      "source_characters": 9462,
+      "source_lines": 227,
+      "source_sha256": "9ad4a7cc96ac26b8598af34ccfcb76ec7939b090791f664e4ef0e2358e1a1204",
+      "source_utf8_bytes": 9462
+    },
+    "partition": {
+      "source_characters": 10341,
+      "source_lines": 263,
+      "source_sha256": "a56599465e018211d76ca8323e2afc89cb7f557a048957938e02caadb8bd6512",
+      "source_utf8_bytes": 10341
+    },
+    "tree": {
+      "source_characters": 8069,
+      "source_lines": 219,
+      "source_sha256": "bf26da5faa7faca4ed439004037d5e76ee4735d2e1d6d62e624b1d32792f8081",
+      "source_utf8_bytes": 8069
+    }
+  },
+  "fixture_ids": [
+    "pair_open",
+    "closed_pair",
+    "scalars",
+    "outer_product",
+    "local_reduction",
+    "open_hyperedge",
+    "closed_hyperedge",
+    "chain6",
+    "cycle6",
+    "star6",
+    "disconnected5",
+    "unit_dimensions",
+    "scalar_mixed",
+    "asymmetric5"
+  ],
+  "formal_research_data_accessed": false,
+  "limitations": [
+    "Exercises exact guard functions, not the OpenEvolve worker/provider pipeline.",
+    "Inert package namespaces avoid executing provider-bearing package initializers.",
+    "Characters and UTF-8 bytes are not token counts; no 2048-token fit claim.",
+    "Function replacement is a protocol demonstration, not an improved heuristic.",
+    "Only existing public handwritten fixtures are executed; no formal research sample.",
+    "One shared resource-limited container is not an arbitrary-code security sandbox."
+  ],
+  "model_requests": 0,
+  "purpose": "public-offline-patch-compatibility",
+  "rejections": [
+    {
+      "exception": "ValueError",
+      "kind": "prose",
+      "message": "response must start/end at the exact diff delimiters without prose",
+      "route": "partition"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "fence",
+      "message": "response must start/end at the exact diff delimiters without prose",
+      "route": "partition"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "two_blocks",
+      "message": "exactly one complete diff block is required",
+      "route": "partition"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "unmatched_search",
+      "message": "SEARCH must uniquely match exact current code; no surrounding text",
+      "route": "partition"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "ambiguous_search",
+      "message": "SEARCH must uniquely match exact current code; no surrounding text",
+      "route": "partition"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "outside_region",
+      "message": "diff touches code outside the EVOLVE block",
+      "route": "partition"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "no_op",
+      "message": "diff must make an executable, testable change",
+      "route": "partition"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "signature",
+      "message": "find_path signature must remain (inputs, output, sizes, seed=0)",
+      "route": "partition"
+    },
+    {
+      "exception": "SyntaxError",
+      "kind": "syntax",
+      "message": "invalid syntax (<unknown>, line 209)",
+      "route": "partition"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "truncated",
+      "message": "response must start/end at the exact diff delimiters without prose",
+      "route": "partition"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "prose",
+      "message": "response must start/end at the exact diff delimiters without prose",
+      "route": "tree"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "fence",
+      "message": "response must start/end at the exact diff delimiters without prose",
+      "route": "tree"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "two_blocks",
+      "message": "exactly one complete diff block is required",
+      "route": "tree"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "unmatched_search",
+      "message": "SEARCH must uniquely match exact current code; no surrounding text",
+      "route": "tree"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "ambiguous_search",
+      "message": "SEARCH must uniquely match exact current code; no surrounding text",
+      "route": "tree"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "outside_region",
+      "message": "diff touches code outside the EVOLVE block",
+      "route": "tree"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "no_op",
+      "message": "diff must make an executable, testable change",
+      "route": "tree"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "signature",
+      "message": "find_path signature must remain (inputs, output, sizes, seed=0)",
+      "route": "tree"
+    },
+    {
+      "exception": "SyntaxError",
+      "kind": "syntax",
+      "message": "invalid syntax (<unknown>, line 211)",
+      "route": "tree"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "truncated",
+      "message": "response must start/end at the exact diff delimiters without prose",
+      "route": "tree"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "prose",
+      "message": "response must start/end at the exact diff delimiters without prose",
+      "route": "beam"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "fence",
+      "message": "response must start/end at the exact diff delimiters without prose",
+      "route": "beam"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "two_blocks",
+      "message": "exactly one complete diff block is required",
+      "route": "beam"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "unmatched_search",
+      "message": "SEARCH must uniquely match exact current code; no surrounding text",
+      "route": "beam"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "ambiguous_search",
+      "message": "SEARCH must uniquely match exact current code; no surrounding text",
+      "route": "beam"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "outside_region",
+      "message": "diff touches code outside the EVOLVE block",
+      "route": "beam"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "no_op",
+      "message": "diff must make an executable, testable change",
+      "route": "beam"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "signature",
+      "message": "find_path signature must remain (inputs, output, sizes, seed=0)",
+      "route": "beam"
+    },
+    {
+      "exception": "SyntaxError",
+      "kind": "syntax",
+      "message": "'(' was never closed (<unknown>, line 215)",
+      "route": "beam"
+    },
+    {
+      "exception": "ValueError",
+      "kind": "truncated",
+      "message": "response must start/end at the exact diff delimiters without prose",
+      "route": "beam"
+    }
+  ],
+  "schema_version": 1,
+  "source_sha256": {
+    "check_patches.py": "a0841fc26488c561f60d95a2485b03feceebda0a6f457293159c2a24c4275ce5",
+    "code_utils.py": "7105bc258f597958cddb58a2b0c54a43abe0598290cbaf430ecb0e98bd0f78c4",
+    "export_candidates.py": "2171b07310ec9a22a566d7c02fe6ff85f6cbc1e916f2d3b86eb329481084b281",
+    "heuristics.py": "23943ed9ca5875ddb311082d123b79846b89ea0836d8dba6dbcb19746688acbc",
+    "prototype_validate.py": "a649bd9c4a698c34bd8b54ddf01ebf9a6d1374159a832148cfaa6345376e88d4",
+    "render_candidate_prompts.py": "97f1d2e58d43e44c70f065b3d2615e094fb0944192c483cf0b524f6c20723352"
+  },
+  "status": "passed",
+  "subprocesses": [
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.14164468999999258,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.1293964300000141,
+      "returncode": 0
+    },
+    {
+      "mode": "score",
+      "process_wall_seconds": 0.3716739479999944,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.11085481200001368,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.1126214409999875,
+      "returncode": 0
+    },
+    {
+      "mode": "score",
+      "process_wall_seconds": 0.30808446699998626,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.1241647349999937,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.13612466600000062,
+      "returncode": 0
+    },
+    {
+      "mode": "score",
+      "process_wall_seconds": 0.4447779039999773,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.11870957200000021,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.123281607999985,
+      "returncode": 0
+    },
+    {
+      "mode": "score",
+      "process_wall_seconds": 0.30630621200000974,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.11487246800001572,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.11922994300002188,
+      "returncode": 0
+    },
+    {
+      "mode": "score",
+      "process_wall_seconds": 0.3079405850000114,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.12296167100001298,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.11695499000001064,
+      "returncode": 0
+    },
+    {
+      "mode": "score",
+      "process_wall_seconds": 0.31268495099999427,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.11968013599999949,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.12513133500002027,
+      "returncode": 0
+    },
+    {
+      "mode": "score",
+      "process_wall_seconds": 0.3070820620000063,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.11099240300001156,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.11145787699999232,
+      "returncode": 0
+    },
+    {
+      "mode": "score",
+      "process_wall_seconds": 0.30513171399999806,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.11870492200000626,
+      "returncode": 0
+    },
+    {
+      "mode": "candidate",
+      "process_wall_seconds": 0.12278997900000377,
+      "returncode": 0
+    },
+    {
+      "mode": "score",
+      "process_wall_seconds": 0.31432948900001634,
+      "returncode": 0
+    }
+  ],
+  "tokenizer_measured": false,
+  "image_id": "sha256:ad059619f459c42aded047c343847fc4fc7fd9e025b3993b687768c9f549d5b3",
+  "image_embedded_source_hash": "008592ed6a4dc8291f5de6f7719799bfe839b0758170bfbc7f8aac494979c763",
+  "launcher_sha256": "93009a29cfae9987bf70060a689c4755650112cda8c830f6e025d7e7ede7a919",
+  "container_limits": {
+    "cpus": 1,
+    "memory_bytes": 2147483648,
+    "memory_plus_swap_bytes": 2147483648,
+    "pids": 64,
+    "network": "none",
+    "read_only": true,
+    "uid": 65534
+  },
+  "returncode": 0
+}
