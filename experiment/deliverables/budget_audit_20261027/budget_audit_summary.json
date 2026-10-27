@@ -1,0 +1,219 @@
+{
+  "api_serialization_tokens": null,
+  "blockers": [
+    "No tiktoken/tokenizers/transformers/sentencepiece distribution installed in pinned image; no selected model-native tokenizer artifact supplied.",
+    "No explicit selected provider/model and verified exact tokenizer or complete bound receipt supplied.",
+    "Input prompt/message serialization and full API budget not measured."
+  ],
+  "candidate_exports": [
+    {
+      "lines": 263,
+      "route": "partition",
+      "sha256": "a56599465e018211d76ca8323e2afc89cb7f557a048957938e02caadb8bd6512",
+      "tokens": null,
+      "utf8_bytes": 10341
+    },
+    {
+      "lines": 219,
+      "route": "tree",
+      "sha256": "bf26da5faa7faca4ed439004037d5e76ee4735d2e1d6d62e624b1d32792f8081",
+      "tokens": null,
+      "utf8_bytes": 8069
+    },
+    {
+      "lines": 227,
+      "route": "beam",
+      "sha256": "9ad4a7cc96ac26b8598af34ccfcb76ec7939b090791f664e4ef0e2358e1a1204",
+      "tokens": null,
+      "utf8_bytes": 9462
+    }
+  ],
+  "cap_assessments": {
+    "2048": {
+      "covers": "nine saved examples only; not arbitrary future responses",
+      "overflow_response_ids": null,
+      "status": "unmeasured"
+    },
+    "4096": {
+      "covers": "nine saved examples only; not arbitrary future responses",
+      "overflow_response_ids": null,
+      "status": "unmeasured"
+    },
+    "8192": {
+      "covers": "nine saved examples only; not arbitrary future responses",
+      "overflow_response_ids": null,
+      "status": "unmeasured"
+    }
+  },
+  "caps": [
+    2048,
+    4096,
+    8192
+  ],
+  "counting_scope": "utf8-response-text-only:no-special-tokens",
+  "environment": {
+    "python": "3.13.2 (main, Apr  8 2025, 01:41:36) [GCC 12.2.0]",
+    "system": "Linux"
+  },
+  "execution_limits": {
+    "cpus": 1,
+    "memory_bytes": 2147483648,
+    "memory_plus_swap_bytes": 2147483648,
+    "network": "none",
+    "pids": 64,
+    "read_only": true,
+    "uid": 65534
+  },
+  "full_request_budget_feasibility": "blocked_unmeasured",
+  "image_id": "sha256:ad059619f459c42aded047c343847fc4fc7fd9e025b3993b687768c9f549d5b3",
+  "input_context_tokens": null,
+  "launcher_sha256": "ab8242e4db741078e725dbfffaa980424c4c1af222eb7b164e024e1905b08509",
+  "limitations": [
+    "Only exact saved response text is in scope; no prompts/messages/API framing, stop/EOS, reasoning or context-window accounting.",
+    "Local exactness is a caller contract; external receipts are unverified claims, not authenticated measurements.",
+    "No estimates, character/token conversions, automatic model selection, or budget changes."
+  ],
+  "measurement": null,
+  "model_requests": 0,
+  "network_count_requests": 0,
+  "public_model_clues": {
+    "interpretation": "Legacy report default and optional environment override are clues only; real config/environment selection is deliberately not read; no provider/model chosen.",
+    "run_experiment.py": {
+      "TN_MODEL_override_present": true,
+      "legacy_report_default_present": true
+    },
+    "selected_model": null,
+    "selected_provider": null
+  },
+  "purpose": "decoupled-public-offline-response-budget-audit",
+  "resource_preparation_status": "pinned_offline_audit_ran_successfully; not solver workload calibration",
+  "responses": [
+    {
+      "cap_status": {
+        "2048": "unmeasured",
+        "4096": "unmeasured",
+        "8192": "unmeasured"
+      },
+      "exact_tokens": null,
+      "lines": 5,
+      "response_id": "beam/local_decision",
+      "response_sha256": "ad6ff3b218f354079cce05f469d451b67f9dfe0c82459d3e3c7b8d7ab708deb0",
+      "utf8_bytes": 178
+    },
+    {
+      "cap_status": {
+        "2048": "unmeasured",
+        "4096": "unmeasured",
+        "8192": "unmeasured"
+      },
+      "exact_tokens": null,
+      "lines": 489,
+      "response_id": "beam/replace_entire_region",
+      "response_sha256": "f19fe7570f0126681c76e8484b8cbe9fadee753d9c9bb4f91ebc8ee2bd7d868c",
+      "utf8_bytes": 19761
+    },
+    {
+      "cap_status": {
+        "2048": "unmeasured",
+        "4096": "unmeasured",
+        "8192": "unmeasured"
+      },
+      "exact_tokens": null,
+      "lines": 76,
+      "response_id": "beam/replace_search_function",
+      "response_sha256": "e728c17b88ae9e5ae542bb5e6567343b2fb99e4c5551ea34ea2f2f73b4011246",
+      "utf8_bytes": 4136
+    },
+    {
+      "cap_status": {
+        "2048": "unmeasured",
+        "4096": "unmeasured",
+        "8192": "unmeasured"
+      },
+      "exact_tokens": null,
+      "lines": 5,
+      "response_id": "partition/local_decision",
+      "response_sha256": "70fb9c116a2f997187c00588dc70b7ee34b32b38d391a6faab6b093f9d14799f",
+      "utf8_bytes": 204
+    },
+    {
+      "cap_status": {
+        "2048": "unmeasured",
+        "4096": "unmeasured",
+        "8192": "unmeasured"
+      },
+      "exact_tokens": null,
+      "lines": 481,
+      "response_id": "partition/replace_entire_region",
+      "response_sha256": "0b3583f9e8b319d6ff2441e7657a461d03b9f74735bcef41e02b3c7dedd19534",
+      "utf8_bytes": 18368
+    },
+    {
+      "cap_status": {
+        "2048": "unmeasured",
+        "4096": "unmeasured",
+        "8192": "unmeasured"
+      },
+      "exact_tokens": null,
+      "lines": 112,
+      "response_id": "partition/replace_search_function",
+      "response_sha256": "5c2cebd14269210aac45f8fcdaaabbce683e5dd4915cedd8d3265b205653f422",
+      "utf8_bytes": 5015
+    },
+    {
+      "cap_status": {
+        "2048": "unmeasured",
+        "4096": "unmeasured",
+        "8192": "unmeasured"
+      },
+      "exact_tokens": null,
+      "lines": 5,
+      "response_id": "tree/local_decision",
+      "response_sha256": "446096b28629baaac66f7b032866dcc211262347dab546bc1b7670e83f9e5b62",
+      "utf8_bytes": 170
+    },
+    {
+      "cap_status": {
+        "2048": "unmeasured",
+        "4096": "unmeasured",
+        "8192": "unmeasured"
+      },
+      "exact_tokens": null,
+      "lines": 445,
+      "response_id": "tree/replace_entire_region",
+      "response_sha256": "ae501d73154cbf23a28150ad225913ed15ea7543bcd45c8e1770e9e83266bf99",
+      "utf8_bytes": 17489
+    },
+    {
+      "cap_status": {
+        "2048": "unmeasured",
+        "4096": "unmeasured",
+        "8192": "unmeasured"
+      },
+      "exact_tokens": null,
+      "lines": 68,
+      "response_id": "tree/replace_search_function",
+      "response_sha256": "69805ececed565e559cea226eb281cf9467c5cb37d7dcf95b0c7e7721827367d",
+      "utf8_bytes": 2743
+    }
+  ],
+  "schema_version": 1,
+  "source_sha256": {
+    "audit.py": "1213e660ea9cddfecf26afe5844568963724f37fe99ff47be1462c0b9dfabfa5",
+    "export_candidates.py": "2171b07310ec9a22a566d7c02fe6ff85f6cbc1e916f2d3b86eb329481084b281",
+    "heuristics.py": "23943ed9ca5875ddb311082d123b79846b89ea0836d8dba6dbcb19746688acbc",
+    "options.json": "94bfbed25bae42773a378143396b3441a8eef8cb45d825d61e1f54770d0e8dc9",
+    "patch_summary.json": "5b9a753182aabb29fe1eea22cfd48205a17df813881cd4988cc899126eb5663b",
+    "public_run_experiment.txt": "76ad65a790d3a273195bbb7ab80b86ed72a5873fe8a7f3fc0f83f30cb8e80ebf",
+    "test_audit.py": "707af1f5579b64e63ff74f7b4c560e794dd3f5e94fab807ba7dbd01592f6e564"
+  },
+  "status": "blocked_unmeasured",
+  "synthetic_measurement_ignored": false,
+  "tokenizer_measured_locally": false,
+  "tokenizer_package_inventory": {
+    "sentencepiece": null,
+    "tiktoken": null,
+    "tokenizers": null,
+    "transformers": null
+  }
+}

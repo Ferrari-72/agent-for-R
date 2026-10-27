@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "purpose": "public-engineering-resource-pretrial",
+  "design": "DECOUPLED: freeze and expose the entire structure-only pool before any solver; solver outcomes never alter pool admission",
+  "circuit_cells": [
+    {"qubits": 8, "depth": 4, "wanted": 2},
+    {"qubits": 8, "depth": 8, "wanted": 2},
+    {"qubits": 12, "depth": 4, "wanted": 2},
+    {"qubits": 12, "depth": 8, "wanted": 2}
+  ],
+  "lattice_cells": [
+    {"rows": 4, "cols": 4, "wanted": 2},
+    {"rows": 5, "cols": 5, "wanted": 2}
+  ],
+  "attempt_limit_per_cell": 32,
+  "equivalence_search_state_limit": 10000,
+  "equivalence_wall_seconds_per_draw": 5,
+  "solver_wall_seconds": 10,
+  "score_wall_seconds": 10,
+  "candidate_seed": 0,
+  "repeats": 2,
+  "baseline_trial_seed_labels": [0, 1],
+  "candidate_routes": {
+    "teacher.partition": {"function": "recursive_hypergraph_partition", "parameters": {"cutoff": 4, "refinement_sweeps": 4, "partition_trials": 2, "peak_limit": null}},
+    "teacher.tree": {"function": "tree_search_annealing", "parameters": {"steps": 128, "temperature": 0.5, "peak_limit": null}},
+    "teacher.beam": {"function": "budgeted_beam_search", "parameters": {"width": 8, "max_expansions": 256, "peak_limit": null}}
+  },
+  "baseline_solvers": [
+    {"solver_id": "greedy", "parameters": {}},
+    {"solver_id": "random-greedy", "parameters": {"max_repeats": 32, "parallel": false}},
+    {"solver_id": "simulated-annealing", "parameters": {"tsteps": 20, "numiter": 20, "minimize": "flops"}},
+    {"solver_id": "omeco", "parameters": {"algorithm": "TreeSA", "settings": {}}}
+  ],
+  "baseline_parameter_sources": ["tnlab/baselines.py explicit 32-repeat and tsteps=20,numiter=20 examples", "tnlab/benchmark_solvers.py solve API", "tnlab/benchmark_protocol.py explicit parameter schema", "tnlab/omeco_adapter.py _configuration defaults: ntrials=10,niters=50,300 betas and ScoreFunction"],
+  "omeco_adapter_seed": null,
+  "peak_element_warning_threshold": 1073741824,
+  "model_requests": 0,
+  "public_engineering_exposure": true,
+  "formal_research_sample": false,
+  "unseen_claim": false
+}

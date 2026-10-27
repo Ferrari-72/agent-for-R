@@ -1,0 +1,25 @@
+{
+  "browser_validation": "blocked_by_automatic_approval; no browser interaction or screenshot verified",
+  "counts": {
+    "charts": 36,
+    "execution_rows": 168,
+    "marks": 252,
+    "options": 12,
+    "views": 12
+  },
+  "embedded_summary_matches": true,
+  "model_requests": 0,
+  "report_sha256": "949f86ae2f0a6d0a8ca798848f9753f5ba45678e89fee151958a97ad9c9c8836",
+  "run_id": "resource_pilot_20261027_f97894f7ca494c718b0ba4587c1a6455",
+  "schema_version": 1,
+  "source_hashes": {
+    "resource_pilot_data.py": "898d6d3cd1281a8ede902a26eae5f1cfaf299c47f3b68c6b1fd0c0519f5d8cc5",
+    "resource_pilot_report.py": "3e1a0f5bbcce4cafb4405ed72efa852ce80d313423fb5b3bbad6f7ae19c1c5e1",
+    "test_resource_pilot_data.py": "6887530f50f27088a12c9daaedbf442bd1194d469d7fcd0df94dfed718422e90",
+    "test_resource_pilot_report.py": "b5e643b6bcb0e464483d375070a7649489545ea2eaf1f749f51b5df9287cdbb6"
+  },
+  "source_summary_sha256": "dc3e2151724d511df18ebd850c900ed00d22410e9b74a01e57dc636802a7af47",
+  "status": "passed",
+  "summary_unchanged": true,
+  "verification_scope": "Linux CLI render, row contract and static HTML structure; no browser execution"
+}
