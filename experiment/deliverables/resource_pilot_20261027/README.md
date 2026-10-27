@@ -14,6 +14,12 @@ In this run, all seven solvers completed 24/24 rows with no 10-second timeout. M
 
 The pool is public and deliberately engineering-only. No model calls, formal research sample, held-out evaluation, historical corpus, final evaluation, or transfer data is used. These observations do not support unseen-performance, novelty, or research-efficacy claims.
 
+## Implications for the proposed study
+
+Retain the proposed 10-second solver and independent-score limits, with 1 CPU and a 2 GiB memory-plus-swap ceiling, for the next bounded engineering stage. Do not reduce limits to the fastest observed run or extrapolate a production completion time from these timings. The tested circuits contain 18–47 tensors with 8 or 12 output legs; the lattices contain 16 or 25 tensors with one output leg per site. The proposed q16/q20 circuit cells require their own resource evidence. The current proposed lattice sizes remain 4x4/5x5; 6x6 would be an additional, unbudgeted design change, not an implicit next task. The prototype's 256-input interface limit is not a calibrated workload size.
+
+The beam route explored complete states but retained its initial incumbent on 5 of the 12 distinct structures (10 of 24 repeat rows): one 12-qubit/depth-8 circuit and all four lattice fixtures. Keep those rows and the generation-zero comparison. This diagnostic does not mean a failure, does not measure novelty, and is not a reason to change the frozen public pool or silently retune one route after seeing scores.
+
 ## Final evidence and optional report
 
 The final run is `resource_pilot_20261027_f97894f7ca494c718b0ba4587c1a6455`, retained under `experiment/results/`. All 168 expected rows succeeded, all 11 checks passed, and all 36 teacher-route repeat pairs returned identical paths. The 31 preparation and 336 solver/score worker request/response/stdout/stderr sets are retained there; worker stderr files are empty. `rows.jsonl` matches the summary rows exactly. The summary SHA-256 is `dc3e2151724d511df18ebd850c900ed00d22410e9b74a01e57dc636802a7af47`; the pool's canonical SHA-256 before and after execution is `d5019ee13f5b9a8139c347535d13717b1fdb9283ba553ddfbeb5775b7a62aa7e`.
