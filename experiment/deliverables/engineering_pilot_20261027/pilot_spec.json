@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "purpose": "public-engineering-only",
+  "version": "tensor-topology-pilot-v1",
+  "topology_draw_rule": "SHA256(UTF8 compact JSON [version,family,shape,attempt,ordinal]); accept an eligible gate or edge iff the first byte modulo 4 is less than 3",
+  "circuit_cells": [
+    {"qubits": 4, "depth": 2, "wanted": 3},
+    {"qubits": 4, "depth": 3, "wanted": 3},
+    {"qubits": 6, "depth": 2, "wanted": 3},
+    {"qubits": 6, "depth": 3, "wanted": 3}
+  ],
+  "lattice_cells": [
+    {"rows": 2, "cols": 3, "wanted": 2},
+    {"rows": 3, "cols": 3, "wanted": 2}
+  ],
+  "attempt_limit_per_cell": 32,
+  "equivalence_search_state_limit": 10000,
+  "equivalence_wall_seconds_per_draw": 5,
+  "solver_wall_seconds": 10,
+  "evaluator_wall_seconds": 10,
+  "candidate_algorithm_seed": 0,
+  "candidate_repeats": 2,
+  "peak_element_limit": 1073741824,
+  "formal_research_sample": false,
+  "historical_corpus_access": false,
+  "unseen_claim": false,
+  "model_requests": 0
+}
